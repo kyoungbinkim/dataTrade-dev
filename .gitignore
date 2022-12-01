@@ -1,0 +1,5 @@
+# dependencies
+front/node_modules
+/.pnp
+.pnp.js
+

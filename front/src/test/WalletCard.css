@@ -1,0 +1,22 @@
+.Card{
+	margin: 1rem;
+	border: 1px solid black;
+	border-radius: 5px;
+}
+
+.walletCard {
+	margin: 1rem;
+	border: 1px solid black;
+	border-radius: 5px;
+}
+
+.mimcCard {
+	margin: 1rem;
+	border: 1px solid black;
+	border-radius: 5px;
+	text-align: center;
+}
+
+.input {
+	margin-left: 2px;
+}
