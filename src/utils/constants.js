@@ -1,0 +1,10 @@
+/* global BigInt */
+const SUBGROUP_ORDER = BigInt('2736030358979909402780800718157159386074658810754251464600343418943805806723');
+const CONTACT_DEFAULT_NAME = 'defaultName'; // TODO: default name
+
+const constants = {
+    SUBGROUP_ORDER,
+    CONTACT_DEFAULT_NAME
+};
+
+export default constants;
