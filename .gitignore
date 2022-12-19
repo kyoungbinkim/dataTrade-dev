@@ -1,8 +1,10 @@
 # dependencies
-front/node_modules
-server/node_modules
+front/node_modules/
+server/node_modules/
+server/src/core/libsnark/
 /.pnp
 .pnp.js
 
 *.json
 *.dat
+*.dylib
