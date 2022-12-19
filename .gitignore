@@ -1,5 +1,8 @@
 # dependencies
 front/node_modules
+server/node_modules
 /.pnp
 .pnp.js
 
+*.json
+*.dat
