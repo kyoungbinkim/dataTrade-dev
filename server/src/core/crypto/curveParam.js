@@ -10,7 +10,7 @@ const curveParam = {
     blockBytes : null,
 };
 
-export default function CurveParam(EC_TYPE) {
+export default function CurveParam(EC_TYPE='EC_ALT_BN128') {
     if (curveParam.EC_TYPE !== EC_TYPE) {
         if (EC_TYPE === 'EC_ALT_BN128') {
             curveParam.prime = BigInt('21888242871839275222246405745257275088548364400416034343698204186575808495617');

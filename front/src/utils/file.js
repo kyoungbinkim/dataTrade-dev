@@ -147,6 +147,17 @@ function readFileToBigIntString(filePath){
     return arr.join(''); //.padStart(CurveParam(config.EC_TYPE).blockBytes * 2, '0')
 }
 
+export function getByteLengthOfUtf8String(s) {
+    let i,b,c;
+	if(s != undefined && s != "") {
+		for(b=i=0;c=s.charCodeAt(i++);b+=c>>11?3:c>>7?2:1);
+		return b;
+	} else {
+		return 0;
+	}
+}
+
+
 const FileSystem = {
     peerEncData,
     readRawFile,
@@ -155,6 +166,7 @@ const FileSystem = {
     readFileToBigIntString,
     BigIntArrToBuffer,
     BigIntArrToTextString,
+    getByteLengthOfUtf8String,
 };
 
 export default FileSystem;

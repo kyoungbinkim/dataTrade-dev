@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import { render } from '@testing-library/react';
@@ -11,6 +12,7 @@ import UserKey from './test/keyTest.js';
 import EncDataTest from './test/encryptionTest.js';
 import reportWebVitals from './reportWebVitals.js';
 import FileUpload from './test/fileUploadTest.js';
+import App from './App.js';
 
 
 function Welcome(props){
@@ -95,24 +97,13 @@ class ClockDisplay extends React.Component{
   }
 }
 
-function App(){
-  return (
-    <div className='mimcCard'>
-      <ClockDisplay />
-      <Mimc7Class.Mimc7Card />
-      <WalletCard />
-      <UserKey.UserKeyTest />
-      <EncDataTest.EncData />
-      <FileUpload />
-    </div>
-  ); 
-}
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <BrowserRouter>
     <App />
-  </React.StrictMode>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -130,4 +130,4 @@ class MiMC31 extends MiMCBase {
     }
 }
 
-export default {MiMC7, MiMC31};
+export default {MiMC7};

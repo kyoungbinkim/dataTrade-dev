@@ -41,7 +41,7 @@ class Mimc7Class extends React.Component{
     }
 }
 
-const Mimc7Card = () => {
+export const Mimc7Card = () => {
     const mimc7 = new mimc.MiMC7();
     const [val,  setVal]  = useState(null);
     const [dist, setDist] = useState(null);
@@ -61,7 +61,7 @@ const Mimc7Card = () => {
     };
 
     return (
-        <div className="mimcCard">
+        <div>
             <h2>-- MiMC7 TEST --</h2>
             <input name="input" onChange={(event) => changeValHandler(event)} placeholder="only hex"></input>
             <button onClick={()=>changeDistHandler()} name="hash"> hash </button>

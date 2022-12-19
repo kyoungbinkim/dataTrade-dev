@@ -69,6 +69,31 @@ class UserKey {
 
         return userPublicKey;
     }
+
+    static recoverFromIdPw(id, pw){
+
+        console.log("in")
+        const mimc7 = new mimc.MiMC7();
+        const sk = MakePrivKey(id, pw);
+        const userPubkey = this.recoverFromUserSk(sk);
+        console.log(JSON.stringify(userPubkey));
+        return new UserKey(userPubkey, sk);
+
+    }
+}
+
+export function recoverFromIdPw(id,pw){
+    console.log("in")
+        const sk = MakePrivKey(id, pw);
+        const userPubkey = UserKey.recoverFromUserSk(sk);
+        console.log(JSON.stringify(userPubkey));
+        return new UserKey(userPubkey, sk);
+}
+
+export function MakePrivKey(id, pw){
+    const mimc7 = new mimc.MiMC7();
+    const sk = mimc7.hash(types.asciiToHex(id).padEnd(32,0), pw.padEnd(32, 0));
+    return sk;
 }
 
 export default {

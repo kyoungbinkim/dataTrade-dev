@@ -75,21 +75,14 @@ class peerEncData{
 
 
 function BigIntArrToBuffer(BigIntDataArr){
-    const strBlockBytes = parseInt(CurveParam(config.EC_TYPE).primeLen / 8);
+    const strBlockBytes = CurveParam(config.EC_TYPE).blockBytes;
     let strTmp ='';
     for(let i=0; i<config.dataMaxBlockNum; i++){
         if(BigIntDataArr[i]=== '0') break;
         strTmp += BigIntDataArr[i].padStart(strBlockBytes*2, '0');
     }
-    //calc pad num
-    const pad = Number('0x' + strTmp.slice(-2));
-
-    // delete pad from data string
-    strTmp = strTmp.slice(0, strTmp.length- 2*pad);
     
     const buf = Buffer.from(strTmp, 'hex');
-    // console.log(buf);
-    // fs.writeFileSync('./test.txt', buf);
     return buf;
 }
 
@@ -139,6 +132,24 @@ function rawFileToBigIntString(rawData){
     return arr.join(''); // .padStart(CurveParam(config.EC_TYPE).blockBytes * 2, '0')
 }
 
+export function rawFileToHexString(rawData) {
+    return rawFileToBigIntString(rawData).padEnd(config.dataBlockNum * CurveParam().blockBytes * 2, '0');
+}
+
+export function utf8StringToHexSting(utf8string){
+    const utf8buf = Buffer.from(utf8string, 'utf-8');
+    return rawFileToHexString(utf8buf);
+}
+
+export function hexStringToBigIntArr(hexStr){
+    const bigIntArr = [];
+    const blockSize= CurveParam().blockBytes * 2
+    for(let i=0; i<config.dataBlockNum; i++){
+        bigIntArr.push(hexStr.slice(i*blockSize, (i+1)*blockSize));
+    }
+    return bigIntArr;
+}
+
 function readFileToBigIntString(filePath){
     const rawData = fs.readFileSync(filePath);
     let arr= [];
@@ -147,14 +158,28 @@ function readFileToBigIntString(filePath){
     return arr.join(''); //.padStart(CurveParam(config.EC_TYPE).blockBytes * 2, '0')
 }
 
+export function getByteLengthOfUtf8String(s) {
+    let i,b,c;
+	if(s != undefined && s != "") {
+		for(b=i=0;c=s.charCodeAt(i++);b+=c>>11?3:c>>7?2:1);
+		return b;
+	} else {
+		return 0;
+	}
+}
+
 const FileSystem = {
     peerEncData,
     readRawFile,
     readTextFile,
     rawFileToBigIntString,
+    rawFileToHexString,
     readFileToBigIntString,
     BigIntArrToBuffer,
     BigIntArrToTextString,
+    getByteLengthOfUtf8String,
+    utf8StringToHexSting,
+    hexStringToBigIntArr,
 };
 
 export default FileSystem;

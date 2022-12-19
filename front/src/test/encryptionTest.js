@@ -64,7 +64,7 @@ function EncData() {
 
 
     return(
-        <div className='mimcCard'>
+        <div className='myCard'>
             <h3> -- encryption test --</h3>
             <div>
                 <button onClick={onClcikRandomFileData}> get random BigInt fileData </button>
@@ -80,10 +80,10 @@ function EncData() {
             </div>
             
             <div>
-                <button onClick={getDecData}> Decrypt Data</button>
+                <button className='buttonStyle' onClick={getDecData}> Decrypt Data</button>
                 <h4>dec data : {decData}</h4>
             </div>
-            <button type="button" onClick={exportData}>
+            <button type="buttonStyle" onClick={exportData}>
                 Export RegistData SnarkInput JSON
             </button>
         </div>

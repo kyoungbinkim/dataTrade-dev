@@ -1,7 +1,6 @@
 import KeyHelper from './keyHelper.js';
-import MiMC from '../cryptos/mimc.js';
-import types from '../../utils/types.js';
-import errorEnum from '../../utils/error.enum';
+import MiMC from '../crypto/mimc.js';
+import types from '../utils/types.js';
 import _ from 'lodash';
 
 /**
@@ -37,34 +36,17 @@ export function getToken(password) {
     return hash.hash(types.asciiToHex(password));
 }
 
-/**
- * 
- * @param {string}              password                User's password 
- * @returns 
- */
-export async function login(password) {
-    if (!isValidPassword(password)) {
-        throw errorEnum.ERR_INVALID_PASSWORD;
-    }
-    const token = getToken(password);
 
-    const [exAddr, exPrivKey] = await KeyHelper.getExAddrAndExPrivKey(token);
-    if (_.isNil(exAddr)) {
-        throw errorEnum.ERR_GET_EXADDR_AND_PRIVKEY;
-    }
-    const pubKey = await KeyHelper.getUserPubKey(token);
-    if (_.isNil(pubKey)) {
-        throw errorEnum.ERR_GET_PUB_KEY;
-    }
-
-    return [exAddr, exPrivKey, pubKey, token];
+export function getPassWordToken(pw){
+    const hash = new MiMC.MiMC7();
+    return hash.hash(types.asciiToHex(pw));
 }
 
 const Login = {
     isValidPassword,
     isEqualPassword,
+    getPassWordToken,
     getToken,
-    login,
 };
 
-export default Login;s
+export default Login;

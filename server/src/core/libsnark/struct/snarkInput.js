@@ -1,101 +1,169 @@
 import types from '../../utils/types.js'
+import Config from '../../utils/config.js';
+import Encryption from '../../crypto/encryption.js';
+import mimc from '../../crypto/mimc.js';
+import math from '../../utils/math.js';
+import CurveParam from '../../crypto/curveParam.js';
 
-export default class SnarkInput {
-    /**
-     *
-     * @param {Object}                  keys            The object of keys { auditor.pk, sender.sk, sender.pk, receiver.pk }
-     * @param {Object}                  ciphertexts     The object of ciphertext { oldsCT, newsCT, newpCT }
-     * @param {Object}                  merkleTreeData  The object of merkleTreeData { root, intermediateHashes, index }. Refer - src/services/client/merkleTreeData
-     * @param {Object}                  nullifier       The nullifier, hexadecimal string
-     * @param {Object}                  commitments     The object of commitments { oldCm, newCm }
-     * @param {Object}                  opens           The object of openings { oldOpen, newOpen }
-     * @param {Object}                  balance         The object of some balance type { pocket, oldCmBal }
-     * @param {Object}                  aux             The object of auxiliary data related with encryption scheme  {  newR, newK }
-     */
-    constructor(
-        keys,
-        ciphertexts,
-        merkleTreeData,
-        nullifier,
-        commitments,
-        opens,
-        balance,
-        aux) {
-        this.keys = keys;
-        this.ciphertexts = ciphertexts;
-        this.merkleTreeData = merkleTreeData;
-        this.nullifier = nullifier;
-        this.commitments = commitments;
-        this.opens = opens;
-        this.balance = balance;
-        this.aux = aux;
+class RegistData {
+    #data   = null;
+    #pk_own = null;
+    #h_k    = null;
+    #h_ct   = null;
+    #id_data= null;
+    #CT_data= null;
+    #CT_r   = null;
+    #dataEncKey = null;
+
+    constructor(EC_TYPE=Config.EC_TYPE){ 
+        this.curveParam = CurveParam(EC_TYPE);
     }
 
-    toJson() {
-        return JSON.stringify(this, null, 2);
-    }
-
-    toSnarkInputFormat() {
-        const input = {
-            'CT': {
-                '0': this.ciphertexts.newpCT.c3[0],
-                '1': this.ciphertexts.newpCT.c3[1],
-                '2': this.ciphertexts.newpCT.c3[2],
-            },
-            'G_r': this.ciphertexts.newpCT.c0,
-            'K_a': this.ciphertexts.newpCT.c2,
-            'K_u': this.ciphertexts.newpCT.c1,
-            'addr': this.keys.sender.pk.ena,
-            'addr_r': this.keys.receiver.pk.ena,
-            'apk': this.keys.auditor.pk,
-            'cm': this.commitments.oldCm,
-            'cm_': this.commitments.newCm,
-            'direction': this.merkleTreeData.direction,
-            'du': this.opens.oldOpen,
-            'du_': this.opens.newOpen,
-            'dv': types.padZeroHexString(this.balance.oldCmBal),
-            'dv_': types.padZeroHexString(this.balance.pocket.privBal),
-            'intermediateHashes': this.merkleTreeData.toIntermediateHashesJson(),
-            'k': this.aux.newK,
-            'k_b': this.keys.sender.pk.pkOwn,
-            'k_b_': this.keys.receiver.pk.pkOwn,
-            'k_u': this.keys.sender.pk.pkEnc,
-            'k_u_': this.keys.receiver.pk.pkEnc,
-            'pv': types.padZeroHexString(this.balance.pocket.pubInBal),
-            'pv_': types.padZeroHexString(this.balance.pocket.pubOutBal),
-            'r': this.aux.newR,
-            'rt': this.merkleTreeData.root,
-            'sk': this.keys.sender.sk,
-            'sn': this.nullifier,
-        };
-
-        // If Fungible Token Transfered
-        if (this.ciphertexts.oldsCT && this.ciphertexts.newsCT) {
-            input['cin'] = {
-                '0': this.ciphertexts.oldsCT.r,
-                '1': this.ciphertexts.oldsCT.ct,
-            };
-            input['cout'] = {
-                '0': this.ciphertexts.newsCT.r,
-                '1': this.ciphertexts.newsCT.ct,
-            };
-        }
-
-        return JSON.stringify(input);
-    }
-
-    static fromJson(libsnarkInputJson) {
-        let dataJson = JSON.parse(libsnarkInputJson);
-        return new SnarkInput(
-            dataJson.keys,
-            dataJson.ciphertexts,
-            dataJson.merkleTreeData,
-            dataJson.nullifier,
-            dataJson.commitments,
-            dataJson.opens,
-            dataJson.balance,
-            dataJson.aux,
+    uploadDataFromStr(str){
+        const utf8buf = Buffer.from(str, 'utf-8');
+        const hexStr = rawFileToBigIntString(utf8buf).padEnd(
+            Config.textFileByteLen*2, "0"
         );
+        this.uploadDataFromHexStr(hexStr);
+    }
 
+    uploadDataFromHexStr(hexStr){
+
+    }
+
+    uploadData(data){
+        try{
+            this.#checkData(data)
+        }
+        catch(err){
+            console.log(err.message);
+            return;
+        }
+        this.#data = data;
+    }
+
+    uploadPkOwnFromPrivKey(privKey) {
+        const mimc7 = new mimc.MiMC7();
+        this.uploadPkOwn(mimc7.hash(privKey));
+    }
+
+    uploadPkOwn(pk_own) {
+        if(types.isBigIntFormat(pk_own)){
+            this.#pk_own = pk_own;
+            return;
+        }
+        throw new Error("privKey format err");
+    }
+
+    uploadsCTdataAndEncKey(sCTdata, dataEncKey){
+        this.#dataEncKey = dataEncKey.toString();
+        this.#CT_r    = sCTdata.r;
+        this.#CT_data = sCTdata.ct;
+    }
+
+    encryptData() {
+        if(this.#CT_data != null || this.#CT_r != null){
+            throw new Error("CT is already exsist");
+        }
+        const dataEncKey = types.decStrToHex( math.randomFieldElement(this.curveParam.prime));
+        const symEnc = new Encryption.symmetricKeyEncryption(dataEncKey);
+        const sCTdata = symEnc.EncData(this.#data);
+        this.uploadsCTdataAndEncKey(sCTdata, dataEncKey);
+    }
+
+    makeSnarkInput(){
+        if (
+            this.#dataEncKey == null || 
+            this.#CT_data == null || 
+            this.#pk_own == null ||
+            this.#data ==null
+        ){ throw new Error("data is not prepared"); }
+        const mimc7 = new mimc.MiMC7();
+        this.#h_k    = mimc7.hash(this.#pk_own, this.#dataEncKey);
+        this.#h_ct   = this.#hashArr(this.#CT_data);
+        this.#id_data= this.#hashArr(this.#data);
+    }
+
+    getsCtData(){
+        return new Encryption.sCTdata(this.#CT_r, this.#CT_data).toJson();
+    }
+
+    getKey(){
+        return this.#dataEncKey;
+    }
+
+    gethCt(){
+        return this.#h_ct;
+    }
+    
+    toSnarkInputFormat(){
+        if( this.#dataEncKey == null || 
+            this.#CT_data == null ||
+            this.#pk_own == null ||
+            this.#data ==null
+        ){ throw new Error("param is not prepared"); }
+        
+        const snarkInput = {
+            "pk_own"    : this.#pk_own,
+            "h_k"       : this.#h_k,
+            "h_ct"      : this.#h_ct,
+            "id_data"   : this.#id_data,
+            "dataEnckey": this.#dataEncKey,
+            "data"      : {},
+            "CT_data"   : {},
+            "CT_r"      : this.#CT_r,
+        };
+        for(let i=0; i<Number(Config.dataMaxBlockNum); i++){
+            snarkInput["data"][i]  = this.#data[i];
+            snarkInput["CT_data"][i]= this.#CT_data[i];
+        }
+        // console.log(snarkInput);
+        return JSON.stringify(snarkInput);
+    }
+
+    //pk_own, h_k, h_ct, id_data; 
+    toSnarkVerifyFormat(){
+        if(
+            this.#pk_own == null ||
+            this.#h_ct   == null ||
+            this.#h_k    == null ||
+            this.#id_data== null 
+        ){ return null;}
+        const verifySnarkInput = {
+            "pk_own"    : this.#pk_own,
+            "h_k"       : this.#h_k,
+            "h_ct"      : this.#h_ct,
+            "id_data"   : this.#id_data,
+        };
+        return JSON.stringify(verifySnarkInput);
+    }
+
+    #hashArr(arr){
+        const mimc7 = new mimc.MiMC7();
+        for(let i=0; i<arr.length; i++){
+            mimc7.hashUpdate(arr[i]);
+        }
+        return mimc7.hashGetOuptut();
+    }
+
+    #checkData(data){
+        const error = Error("data format Error");
+        if (!Array.isArray(data)) {
+            throw error;
+        }
+        if (data.length != Config.dataMaxBlockNum){
+            throw error;
+        }
+        for(let i=0; i<Config.dataMaxBlockNum; i++){
+            if(! types.isBigIntFormat(data[i])){
+                throw error;
+            }
+        }
     }
 }
+
+const SnarkInput = {
+    RegistData,
+}
+
+export default SnarkInput;
