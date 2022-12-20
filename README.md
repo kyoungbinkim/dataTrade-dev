@@ -16,3 +16,10 @@
 #### run front
 	cd front
 	npm start
+
+#### install server
+	cd server
+	npm install
+
+#### run server
+	npm run nodemon
