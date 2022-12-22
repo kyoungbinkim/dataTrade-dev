@@ -47,7 +47,7 @@ export default class LibSnark {
         SnarkLib.writeProof(this.contextId, proof_file_path);
     }
 
-    async uploadInputAndRunProof(snarkInputJson, proofId=""){
+    uploadInputAndRunProof(snarkInputJson, proofId=""){
         this.uploadInputJsonStr(snarkInputJson);
         this.runProof(proofId);
     }
@@ -67,20 +67,7 @@ export default class LibSnark {
         console.log(SnarkLib.getLastFunctionMsg(this.contextId));
     }
 
-    async getProofJson(proofId = "") {
-        // const proofJson = fs.readFile(
-        //     snarkPath + this.CircuitType + proofId + "_proof.json",
-        //     (err, data) =>{
-        //         if(err){
-        //             console.log(err);
-        //             return null;
-        //         }
-        //         else{
-        //             return data;
-        //         }
-        //     }
-        // );
-
+    getProofJson(proofId = "") {
         try {
             const proofJson = fs.readFileSync(
                 snarkPath + this.CircuitType + proofId + "_proof.json", 

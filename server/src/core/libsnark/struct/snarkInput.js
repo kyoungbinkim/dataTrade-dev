@@ -48,6 +48,7 @@ class RegistData {
     }
 
     uploadPkOwn(pk_own) {
+        console.log("pk_own : ", pk_own);
         if(types.isBigIntFormat(pk_own)){
             this.#pk_own = pk_own;
             return;
@@ -88,12 +89,16 @@ class RegistData {
         return new Encryption.sCTdata(this.#CT_r, this.#CT_data).toJson();
     }
 
-    getKey(){
+    getEncKey(){
         return this.#dataEncKey;
     }
 
     gethCt(){
         return this.#h_ct;
+    }
+
+    getIdData(){
+        return this.#id_data;
     }
     
     toSnarkInputFormat(){

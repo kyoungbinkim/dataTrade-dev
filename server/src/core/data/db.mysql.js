@@ -1,10 +1,10 @@
 import { mysqlConfig, fileStorePath } from "../utils/config.js";
+import randomWord from 'random-words';
 import mysql from 'mysql';
 import _ from 'lodash';
+import math from "../utils/math.js";
 
 const connection = mysql.createConnection(mysqlConfig);
-
-// const userInsertUserQuery = `INSERT INTO users(id, pwToken, nickname) VALUES('${id}', '${pwTk}', '${nickname}');`
 
 /**
  * 
@@ -14,10 +14,9 @@ const connection = mysql.createConnection(mysqlConfig);
  * @return {boolean} true: you can use Id 
  */
 export function idDuplicateCheckQuery(id, callback) {
-    const duplicateCheck = `select id from users where id=?`;
+    const duplicateCheck = `select id from user where id=?`;
     connection.query(duplicateCheck, [`${id}`], (err, res) => {
         if(err) { callback(err, false); }
-        console.log("in handler",id, res);
         callback(null, res.length==0);
     });
 }
@@ -29,7 +28,7 @@ export function idDuplicateCheckQuery(id, callback) {
  * @param {Callback} callback : true: not duplicatae
  */
 export function duplicateCheckQuery(type, val, callback){
-    const duplicateCheck = `select ${type} from users where ${type}=?`;
+    const duplicateCheck = `select ${type} from user where ${type}=?`;
     connection.query(duplicateCheck, [`${val}`], (err, res) => {
         if(err) { callback(err, false); return;}
         callback(null, res.length==0);
@@ -37,26 +36,96 @@ export function duplicateCheckQuery(type, val, callback){
 }
 
 export function getUserNum(callback){
-    connection.query(`select max(seq)+1 from users;`,num = (err, row) => {
+    connection.query(`select max(user_idx)+1 as usrCnt from user;`,num = (err, row) => {
         if(err){ callback(null); }
-        callback(row[0][`max(seq)+1`]);
+        callback(row[0].usrCnt);
+    });
+}
+
+export function getUserInfoFromId(id, callback){
+    const getUserInfo = `select * from user where id=?`;
+
+    connection.query(getUserInfo, [`${id}`], (err, row) => {
+        if(err) {console.log(err); callback(err, null); return;}
+        else if(row.length == 0){
+            console.log("id does not exist");
+            callback("id does not exist", null);
+            return;
+        }
+        callback(null, row[0]);
     });
 }
 
 export function userJoinQuery(userInfoJsonInput, callback){
     const userInfoJson = _.isString(userInfoJsonInput)? JSON.parse(userInfoJsonInput) : userInfoJsonInput;
 
-    const id      = userInfoJson['id'];
-    const pwToken = userInfoJson['pw'] ?? userInfoJson['pwTk'];
-    const nickname = userInfoJson['nickname'];
+    const id       = userInfoJson['id'];
+    const pwToken  = userInfoJson['pw'] ?? userInfoJson['pwTk'];
+    const nickname = userInfoJson['nickname'] ?? randomWord()+randomWord();
+    const pkOwn    = userInfoJson['pkOwn'];
+    const pkEnc    = userInfoJson['pkEnc'];
+    const ENA      = userInfoJson['ena'];
+    const userInsertUserQuery = 
+        `INSERT INTO user (id, pw, nickname, pk_own, pk_enc, ENA) 
+        VALUES('${id}', '${pwToken}', '${nickname}', '${pkOwn}', '${pkEnc}', '${ENA}');`
+    connection.query(userInsertUserQuery, (err, result) => {
+        if(err){console.log(err); callback(false); return;}
+        console.log("userInsertUserQuery",result);
+        callback(true);
+    })
+    
 }
 
+export function userLoginQuery(userInfoJsonInput, callback){
+    const userInfoJson = _.isString(userInfoJsonInput)? JSON.parse(userInfoJsonInput) : userInfoJsonInput;
+
+    const id    = userInfoJson["id"];
+    const pwTk  = userInfoJson["pw"]?? userInfoJson["pwTk"];
+    const userPwCheckQuery = `select id, pw from user where id=?`
+
+    connection.query(userPwCheckQuery, [`${id}`], (err, row) => {
+        if(err) {console.log(err); callback(false); return;}
+        if(row.length == 0){
+            console.log("id does not exist");
+            callback(false);
+            return;
+        }
+        console.log(row);
+        if(row[0].pw === pwTk){
+            callback(true); return;
+        }
+        callback(false);
+    });
+}
+
+export function registDataQuery(registDataJsonInput, callback){
+    const registDataJson = _.isString(registDataJsonInput) ? JSON.parse(registDataJsonInput) : registDataJsonInput;
+
+    const userId = registDataJson[`id`];
+    const title  = registDataJson[`title`];
+    const desc   = registDataJson[`desc`] ?? registDataJson[`descript`];
+    const idData = registDataJson[`id_data`] ?? registDataJson[`h_data`];
+    const encKey = registDataJson[`enc_key`] ?? registDataJson[`dataEncKey`] ?? registDataJson[`key`];
+    const path   = registDataJson[`filePath`] ?? registDataJson[`enc_data_path`] ?? registDataJson[`path`];
+
+    const registQuery = 
+    `INSERT INTO book (user_id, title, descript, h_data, enc_key, enc_data_path) 
+    VALUES('${userId}', '${title}', '${desc}', '${idData}', '${encKey}', '${path}');`
+
+    connection.query(registQuery, (err, result) => {
+        if(err){console.log(err); callback(false); return;}
+        callback(true);
+    })
+}
 
 const mySqlHandler = {
     duplicateCheckQuery,
     getUserNum,
+    getUserInfoFromId,
     idDuplicateCheckQuery,
     userJoinQuery,
+    userLoginQuery,
+    registDataQuery,
 };
 
 export default mySqlHandler;

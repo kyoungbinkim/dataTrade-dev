@@ -3,7 +3,7 @@ import Encryption from '../crypto/encryption';
 import Config from '../utils/config';
 import { randomFieldElement } from '../utils/math';
 
-export const dataDBpath = '/Users/kim/dataTrade-dev/server/db/dataDB.json';
+export const dataDBpath = '/Users/kim/dataTrade-dev/server/db/';
 
 class dataClass{
     #key = undefined;
@@ -71,6 +71,10 @@ function uploadCT(h_ct, id, ctJson, desc=""){
 function getCTjson(h_ct){
     const dataDB = JSON.parse(fs.readFileSync(dataDBpath, 'utf-8'));
     return dataDB[h_ct]["ct"];
+}
+
+export function writesCTfile() {
+    
 }
 
 const DBHandler = {
