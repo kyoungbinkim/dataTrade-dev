@@ -23,3 +23,6 @@
 
 #### run server
 	npm run nodemon
+
+
+### 경로코드가 있어서 데이터 경로는 수정해서 사용하세요
