@@ -16,11 +16,16 @@ const maxUtf8DataSize = 16430;
 
 const FileUpload = () => {
     const fileInput = React.useRef(null);
+    const [title, setTitle] = useState(null);
     const [textFile, setTextFile] = useState(null);
     const [verInput, serVerInput] = useState(null);
     const [proof, setProof] = useState(null);
     const [desc, setDesc] = useState("");
     let fileReader = new FileReader();
+
+    const titleChangeHandler = e => {
+        setTitle(e.target.value);
+    }
 
     const descChangeHandler = e => {
         setDesc(e.target.value);
@@ -46,7 +51,6 @@ const FileUpload = () => {
             console.log(fileReader.result.charCodeAt(0).toString(16));
             sessionStorage.setItem("data", fileReader.result);
         };
-        
     };
     
     const fileUpload = e =>{
@@ -54,6 +58,7 @@ const FileUpload = () => {
             "data"  :`${textFile}`, 
             "key"   :`${sessionStorage.getItem("sk")}`, 
             "id"    :`${sessionStorage.getItem("id")}`,
+            "title" :`${title}`,
             "desc"  :`${desc}`,
         };
         console.log(fileData);
@@ -76,6 +81,7 @@ const FileUpload = () => {
                     onChange={handleChange}
                     style={{ display: "none" }} />
             </React.Fragment><br/>
+            <input type='text' className='text' onChange={titleChangeHandler} placeholder=' 제목을 입력하시오.'></input><br/>
             <textarea className='textDesc' onChange={descChangeHandler} placeholder='작품 설명을 입력하시오.'></textarea><br/>
             <button className='buttonStyle' onClick={fileUpload}> 파일 전송 </button>
             <h4> {textFile} </h4>

@@ -42,12 +42,13 @@
 }
 
 .textDesc{
-	width: 60%;
+	width: 75%;
 	height: 55px;
 }
 
 .text {
 	margin-top: 10px;
+	margin-bottom: 5px;
 	background-color:aliceblue;
 	width: 3.5in;
 	height: 0.8cm;

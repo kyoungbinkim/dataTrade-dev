@@ -25,6 +25,14 @@ class UserKey {
         });
     }
 
+    pubKeyToJson(){
+        return JSON.stringify({
+            ena   : this.pk.ena,
+            pkOwn : this.pk.pkOwn,
+            pkEnc : this.pk.pkEnc,
+        });
+    }
+
     static fromJson(userKeyJson) {
         const userKey = JSON.parse(userKeyJson);
         return new UserKey(
@@ -92,7 +100,7 @@ export function recoverFromIdPw(id,pw){
 
 export function MakePrivKey(id, pw){
     const mimc7 = new mimc.MiMC7();
-    const sk = mimc7.hash(types.asciiToHex(id).padEnd(32,0), pw.padEnd(32, 0));
+    const sk = mimc7.hash(types.asciiToHex(id).padEnd(32,0), types.asciiToHex(pw).padEnd(32, 0));
     return sk;
 }
 

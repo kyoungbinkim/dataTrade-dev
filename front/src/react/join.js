@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PasswordHelper from '../wallet/password.js';
+import UserKey, { MakePrivKey } from '../wallet/keyStruct.js';
 import axios from 'axios'
 import Config from '../utils/config.js';
 import '../test/WalletCard.css'
@@ -16,6 +17,7 @@ export default function JoinService() {
 
     const navigate = useNavigate();
     const [id, setId] = useState(null);
+    const [pw, setPw] = useState(null);
     const [pwTk, setPwTk] = useState(null);
     const [pwTk2, setPwTk2] = useState(null);
     const [idCheck, setIdCheck] = useState(false);
@@ -36,6 +38,7 @@ export default function JoinService() {
     const onChangePw2 = (e)=> {
         const passwordToken = PasswordHelper.getPassWordToken(e.target.value);
         setPwTk2(passwordToken);
+        setPw(e.target.value);
     };
 
     const duplicateHandler = async e => {
@@ -60,7 +63,11 @@ export default function JoinService() {
         alert("pw is different");
         return;
       }
-      const joinData = {"id":`${id}`, "pw":`${pwTk}`}
+
+      const pubkey = UserKey.UserKey.recoverFromIdPw(id, pw);
+      const idpw = {"id":`${id}`, "pw":`${pwTk}`}
+      const joinData =  Object.assign(idpw, JSON.parse(pubkey.pubKeyToJson()));
+  
       console.log(joinData);
       httpCli.post("/usr/join/join", joinData).then(res =>{
         console.log(res.data);
