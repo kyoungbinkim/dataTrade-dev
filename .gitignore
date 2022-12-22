@@ -3,9 +3,9 @@ front/build/
 front/node_modules/
 server/node_modules/
 server/src/core/libsnark/js-libsnark-opt/node_modules/
+server/src/core/libsnark/js-libsnark-opt/libsnark/
 /.pnp
 .pnp.js
 
-*.json
 *.dat
 *.dylib
