@@ -1,7 +1,7 @@
 # dependencies
 front/build/
 front/node_modules/
-server/db/**
+server/db/*.json
 server/node_modules/
 server/src/core/libsnark/js-libsnark-opt/node_modules/
 server/src/core/libsnark/js-libsnark-opt/libsnark/
