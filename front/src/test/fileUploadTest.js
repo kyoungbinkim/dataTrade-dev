@@ -84,7 +84,7 @@ const FileUpload = () => {
             <input type='text' className='text' onChange={titleChangeHandler} placeholder=' 제목을 입력하시오.'></input><br/>
             <textarea className='textDesc' onChange={descChangeHandler} placeholder='작품 설명을 입력하시오.'></textarea><br/>
             <button className='buttonStyle' onClick={fileUpload}> 파일 전송 </button>
-            <h4> {textFile} </h4>
+            <p className='paragraph'> {textFile} </p>
             <div>
                 proof : {proof}
             </div><br/>

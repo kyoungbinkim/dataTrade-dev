@@ -18,21 +18,25 @@ import fs from 'fs';
 describe("string to byte test", ()=> {
     it("string to byte", (done) => {
         const testStr = "받침 asd김भाषाอาหรับ";
-        console.log("len : ", FileSystem.getByteLengthOfUtf8String(testStr));
+        console.log(testStr.length,"len : ", FileSystem.getByteLengthOfUtf8String(testStr));
+        
+        const buf = Buffer.from(testStr, 'utf-8');
+        console.log(buf);
+
         // FileSystem.strToByteArr(testStr);
 
-        const testHexStr = FileSystem.utf8StringToHexSting(testStr);
-        console.log(testHexStr.length/2);
-        const testHexIntArr = FileSystem.hexStringToBigIntArr(testHexStr);
-        console.log(testHexIntArr, testHexIntArr.length);
+        // const testHexStr = FileSystem.utf8StringToHexSting(testStr);
+        // console.log(testHexStr.length/2);
+        // const testHexIntArr = FileSystem.hexStringToBigIntArr(testHexStr);
+        // console.log(testHexIntArr, testHexIntArr.length);
 
-        console.log(FileSystem.BigIntArrToTextString(testHexIntArr));
+        // console.log(FileSystem.BigIntArrToTextString(testHexIntArr));
 
-        const symEnc = new Encryption.symmetricKeyEncryption("111234");
-        const sCtData = symEnc.EncData(testHexIntArr);
-        const decData = symEnc.DecData(sCtData);
-        console.log(sCtData.toJson());
-        console.log(decData.length, FileSystem.BigIntArrToTextString(decData));
+        // const symEnc = new Encryption.symmetricKeyEncryption("111234");
+        // const sCtData = symEnc.EncData(testHexIntArr);
+        // const decData = symEnc.DecData(sCtData);
+        // console.log(sCtData.toJson());
+        // console.log(decData.length, FileSystem.BigIntArrToTextString(decData));
 
         done();
     }).timeout(1000);
