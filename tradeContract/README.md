@@ -1,15 +1,14 @@
-### dataTrade Project solidity contract
 
-install package
+##### 1. install package
     
     npm i
 
-run ganache test network
+##### 2. run ganache test network
     
     npm run ganache
 
 
-test groth verify contract 
+##### 3. open new terminal and test groth verify contract 
 
     cd test
     truffle test grothContract.test.js
