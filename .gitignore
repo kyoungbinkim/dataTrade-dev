@@ -6,6 +6,8 @@ server/node_modules/
 server/src/core/libsnark/js-libsnark-opt/node_modules/
 server/src/core/libsnark/js-libsnark-opt/libsnark/
 tradeContract/node_modules/
+tradeContract/build/
+tradeContract/package-lock.json
 /.pnp
 .pnp.js
 
