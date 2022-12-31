@@ -5,6 +5,10 @@ server/db/*.json
 server/node_modules/
 server/src/core/libsnark/js-libsnark-opt/node_modules/
 server/src/core/libsnark/js-libsnark-opt/libsnark/
+tradeContract/node_modules/
+tradeContract/build/
+tradeContract/package-lock.json
+tradeContract/contracts/artifacts/
 /.pnp
 .pnp.js
 
