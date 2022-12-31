@@ -5,6 +5,7 @@ server/db/*.json
 server/node_modules/
 server/src/core/libsnark/js-libsnark-opt/node_modules/
 server/src/core/libsnark/js-libsnark-opt/libsnark/
+tradeContract/node_modules/
 /.pnp
 .pnp.js
 
