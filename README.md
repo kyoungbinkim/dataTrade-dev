@@ -16,16 +16,19 @@
 
 #### run front
 	cd front
-	npm start
-
-#### install server
-	cd server
-	npm install
+	npm start  
 
 #### run ganache testnet
 	cd tradeContract
 	npm i
-	npm run testrpc
+	npm run testrpc  
+
+#### compile solidity contract
+	truffle compile  
+
+#### install server
+	cd server
+	npm install
 
 #### run server
 	npm run nodemon
