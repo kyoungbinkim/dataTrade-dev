@@ -2,6 +2,7 @@
 
 ##### nodejs version : 16.18.0  
 
+> tradeContract	  :  data Trade smart contracts
 > front/src/cypto :  커브 파라미터, encryption, hash(mimc)  
 > front/src/js-libsnark-opt :   
 > front/src/libsnark/struct/snarkInput.js :  snark 인풋생성 (dataRegister만 구현되어있)  
@@ -20,6 +21,11 @@
 #### install server
 	cd server
 	npm install
+
+#### run ganache testnet
+	cd tradeContract
+	npm i
+	npm run testrpc
 
 #### run server
 	npm run nodemon
