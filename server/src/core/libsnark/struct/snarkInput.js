@@ -100,6 +100,10 @@ class RegistData {
     getIdData(){
         return this.#id_data;
     }
+
+    gethK(){
+        return this.#h_k;
+    }
     
     toSnarkInputFormat(){
         if( this.#dataEncKey == null || 

@@ -7,8 +7,8 @@ describe('mysql test', ()=> {
     const connect = mysql.createConnection({
         host    : "localhost",
         user    : "dataTradeServer",
-        password: `itsp7501`,
-        database: `dataTradeDB`,
+        password: 'Itsp7501`',
+        database: `trade_db`,
     });
 
     const id = "lee";

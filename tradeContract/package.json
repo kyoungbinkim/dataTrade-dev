@@ -1,9 +1,10 @@
 {
   "name": "tradecontract",
   "version": "1.0.0",
-  "description": "",
+  "description": "dataTrade-dev solc Contracts",
   "main": "truffle-config.js",
   "scripts": {
+    "testrpc": "truffle compile && node ./node_modules/ganache-cli/cli.js --hardfork istanbul --port 7545 --gasLimit 0x3FFFFFFFFFFFF --gasPrice 1 --defaultBalanceEther 100000000000 --networkId 1234 --account_keys_path keys.json",
     "ganache": "node ./node_modules/ganache-cli/cli.js --hardfork istanbul --port 7545 --defaultBalanceEther 100000000000 --networkId 1234",
     "compile": "truffle compile",
     "deploy": "truffle deploy",

@@ -21,7 +21,7 @@ contract RegistDataContract {
 
 
     /*
-        input [ constant(1) , pk_own , h_k , h_ct , id_data ]
+        inputs : [ constant(1) , pk_own , h_k , h_ct , id_data ]
     */
     function registData(
         uint256[] memory proof,

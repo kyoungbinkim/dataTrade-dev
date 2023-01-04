@@ -9,11 +9,12 @@ import fs from 'fs';
 import process from 'process';
 import path from 'path';
 import os from 'node:os'
+import Config from '../../../utils/config';
 
 let snarkLibPath = ''; 
 const ffi_flags = ffi.DynamicLibrary.FLAGS.RTLD_NOW | ffi.DynamicLibrary.FLAGS.RTLD_GLOBAL;
 if (process.env.NODE_ENV !== 'production') {
-    snarkLibPath = '/Users/kim/dataTrade-dev/server/src/core/libsnark/js-libsnark-opt/libsnark/libSnark.dylib';
+    snarkLibPath = Config.homePath+'/src/core/libsnark/js-libsnark-opt/libsnark/libSnark.dylib';
 } else {
     snarkLibPath = '../libsnark-optimization/lib/'+os.platform()+'_release/lib/libSnark.dylib';
 }

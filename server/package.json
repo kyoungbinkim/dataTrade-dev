@@ -15,8 +15,11 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
+    "ganache-cli": "^6.12.2",
     "mysql": "^2.18.1",
-    "random-words": "^1.2.0"
+    "random-words": "^1.2.0",
+    "web3": "^1.8.1",
+    "web3-eth-contract": "^1.8.1"
   },
   "nodemonConfig": {
     "ignore": [

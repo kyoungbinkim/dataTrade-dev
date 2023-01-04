@@ -1,10 +1,10 @@
 import fs from 'fs';
-import Config from "../utils/config.js";
+import Config, {fileStorePath, snarkPath} from "../utils/config.js";
 import SnarkInput from "./struct/snarkInput.js";
 import { SnarkLib, SnarkLibUtils } from "./js-libsnark-opt/src/libsnark.interface.js";
 
 export const CircuitType = ["RegistData", "GenTrade", "AcceptTrade"];
-export const snarkPath = '/Users/kim/dataTrade-dev/server/src/core/libsnark/js-libsnark-opt/libsnark/';
+// export const snarkPath = '/Users/kim/dataTrade-dev/server/src/core/libsnark/js-libsnark-opt/libsnark/';
 
 export default class LibSnark {
     constructor(circuitType, verify=false){
@@ -26,7 +26,7 @@ export default class LibSnark {
             null, null, null
         );
 
-        SnarkLib.serializeFormat(this.contextId, Number(Config.serializeFormatDefault));
+        SnarkLib.serializeFormat(this.contextId, Number(Config.serializeFormat));
         SnarkLib.buildCircuit(this.contextId); // 5초
         SnarkLib.readPK(this.contextId, this.pk_file_path);
         if(verify)SnarkLib.readVK(this.contextId, )
@@ -43,8 +43,8 @@ export default class LibSnark {
         SnarkLib.runProof(this.contextId); 
         SnarkLibUtils.write_proof_json(this.contextId, snarkPath+this.CircuitType+proofId+'_proof.json');
 
-        const proof_file_path = Buffer.alloc(300); proof_file_path.write(snarkPath+this.CircuitType+proofId+'_proof.dat');
-        SnarkLib.writeProof(this.contextId, proof_file_path);
+        // const proof_file_path = Buffer.alloc(300); proof_file_path.write(fileStorePath+this.CircuitType+proofId+'_proof.dat');
+        // SnarkLib.writeProof(this.contextId, proof_file_path);
     }
 
     uploadInputAndRunProof(snarkInputJson, proofId=""){

@@ -6,10 +6,12 @@ install package
 
 run ganache test network
     
-    npm run ganache
+    npm run testrpc
 
 
 test groth verify contract 
 
     cd test
-    truffle test grothContract.test.js
+    truffle test grothContract.test.js  
+
+##### keys.json : ganache key files

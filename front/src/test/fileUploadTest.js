@@ -67,6 +67,10 @@ const FileUpload = () => {
             console.log(res.data["proof"]);
             setProof(res.data["proof"]);
             serVerInput(res.data["verifyInput"]);
+
+            sessionStorage.setItem("proof", res.data["proof"]);
+            sessionStorage.setItem("verifyInput", res.data["verifyInput"]);
+
         });
     }
 

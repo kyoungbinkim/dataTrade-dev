@@ -9,8 +9,9 @@ function hexToDex(hexStr){
 
 const Groth16AltBN128Lib = artifacts.require('Groth16AltBN128');
 const Groth16AltBN128Test = artifacts.require('Groth16AltBN128Test');
+const RegistDataContract  = artifacts.require('RegistDataContract');
 
-const vkJson = JSON.parse(fs.readFileSync('/Users/kim/workspace/nodejs-web3/zklay_contracts/test/RegistData_crs_vk.json'));
+const vkJson = JSON.parse(fs.readFileSync(process.cwd()+'/../test/RegistData_crs_vk.json'));
 
 let tmp = [];
 for (let i = 0; i < 2; i++) {
@@ -27,7 +28,7 @@ for (let i = 0; i < 4; i++) {
   tmp.push(hexToDex(vkJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
 }
 
-console.log("ABC len : ", vkJson['ABC'].length)
+// console.log("ABC len : ", vkJson['ABC'].length)
 for (let i = 0; i < vkJson['ABC'].length*2; i++) {
   tmp.push(hexToDex(vkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
 }
@@ -37,8 +38,15 @@ console.log(vk, vk.length);
 module.exports = function (deployer) {
   deployer.deploy(Groth16AltBN128Lib);
   deployer.link(Groth16AltBN128Lib, Groth16AltBN128Test);
+  deployer.link(Groth16AltBN128Lib, RegistDataContract);
+
   deployer.deploy(
     Groth16AltBN128Test,
+    vk
+  );
+  
+  deployer.deploy(
+    RegistDataContract,
     vk
   );
 };

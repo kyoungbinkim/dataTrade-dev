@@ -8,6 +8,8 @@ import WalletCard from "./test/WalletCard.js";
 import EncDataTest from './test/encryptionTest.js';
 import FileUpload from './test/fileUploadTest.js';
 import UserKey from './test/keyTest.js';
+import GetCTandProof from "./react/getProof.js";
+import RegistDataComponent from "./react/registData.js";
 import './test/WalletCard.css'
  
 export default function App() {
@@ -21,7 +23,9 @@ export default function App() {
           <Route path="Join" element={<JoinApp />} />
           <Route path="Login" element={<LoginApp />} />
           <Route path="Logout" element={<Logout/>}/>
-          <Route path="Regist" element={<RegistData/>}/>
+          {/* <Route path="Regist" element= {<RegistData/>}/> */}
+          <Route path="Regist" element={<GetProof/>}/>
+          <Route path="Eth" element={<RegistDataComponent/>} />
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
@@ -152,6 +156,15 @@ function RegistData(){
     LoginCheck(false)??
     <div className="myCard">
       <FileUpload/>
+    </div>
+  );
+}
+
+function GetProof(){
+  return(
+    LoginCheck(false)??
+    <div className="myCard">
+      <GetCTandProof/>
     </div>
   );
 }
