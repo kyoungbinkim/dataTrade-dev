@@ -10,7 +10,9 @@ import {
     getContractFormatVk,
     web3Ins,
     registDataContractJson,
-    registDataContract
+    registDataContract,
+    contractAddr,
+    setContractAddr
 } from './utils.js'
 
 
@@ -29,7 +31,11 @@ export async function ganacheDeploy() {
     console.log('addr : ', addr);
 
     const receipt = await deploy(addr, privKey);
-    console.log(receipt)
+    registDataContract.options.address = receipt.contractAddress;
+
+    
+    setContractAddr(receipt.contractAddress);
+    console.log(receipt, registDataContract.options.address);
     return receipt;
 }
 
@@ -59,6 +65,5 @@ export async function deploy(
     
     // set Contrat Address
     registDataContract.options.address = createReceipt.contractAddress;
-
     return createReceipt;
 }

@@ -10,6 +10,7 @@ import FileUpload from './test/fileUploadTest.js';
 import UserKey from './test/keyTest.js';
 import GetCTandProof from "./react/getProof.js";
 import RegistDataComponent from "./react/registData.js";
+import ListPage from './react/getPage.js'
 import './test/WalletCard.css'
  
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
           {/* <Route path="Regist" element= {<RegistData/>}/> */}
           <Route path="Regist" element={<GetProof/>}/>
           <Route path="Eth" element={<RegistDataComponent/>} />
+          <Route path="list" element={  <ListPage/>} />
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
@@ -52,6 +54,9 @@ function Layout() {
           </li>
           <li>
             <Link to="/Regist">Regist Data</Link>
+          </li>
+          <li>
+            <Link to="/list">Data List</Link>
           </li>
           <li>
             <Link to="/nothing-here">Nothing Here</Link>

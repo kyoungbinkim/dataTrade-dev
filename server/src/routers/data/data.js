@@ -4,7 +4,8 @@ import express from 'express';
 import LibSnark from '../../core/libsnark/libsnark';
 import SnarkInput from '../../core/libsnark/struct/snarkInput';
 import FileSystem from '../../core/utils/file';
-import DBHandler from '../../core/data/db';
+import { isRegistered } from '../../core/contracts/registdata';
+import { registDataContract, hexToDec } from '../../core/contracts/utils';
 
 import {
     fileStorePath,
@@ -61,18 +62,20 @@ router.post('/getProof', (req, res) => {
             // make proof and vk
             libsnarkProver.uploadInputAndRunProof(snarkInput.toSnarkInputFormat(), "_" + snarkInput.gethCt());
             const proofJson = libsnarkProver.getProofJson("_" + snarkInput.gethCt());
-            const verifySnarkFormat = snarkInput.toSnarkVerifyFormat();
+            const verifySnarkFormat = JSON.parse(snarkInput.toSnarkVerifyFormat());
 
             res.status(200).send({
                 flag: true,
                 proof: getProof(snarkInput.gethCt(), 'RegistData'),
                 verifyInput: registDataInputJsonToContractFormat(
-                    JSON.parse(verifySnarkFormat)
+                    verifySnarkFormat
                 ),
                 ct_data     : JSON.parse(snarkInput.getsCtData()),
                 dataEncKey  : '0x'+snarkInput.getEncKey(),
                 contractAddr: getContractAddr(),
                 contractAbi : registDataContractJson.abi,
+                id_data     : verifySnarkFormat['id_data'],
+                h_ct        : verifySnarkFormat['h_ct'],
             })
         } catch (error) {
             console.log(error);
@@ -84,70 +87,62 @@ router.post('/getProof', (req, res) => {
     })
 })
 
+
+/**
+ * post 필요한 데이터  title, decs  id, ct_data, dataEncKey, h_id, h_ct
+ */
 router.post('/upload', (req, res) => {
+    console.log("!!", registDataContract.options.address);
+    if(!isRegistered(hexToDec(req.body['h_ct']))){
+        res.status(400).send({
+            flag : false
+        })
+        return;
+    } 
+
     mySqlHandler.getUserInfoFromId(req.body["id"], (err, userInfo) => {
-        if (err) {
-            return res.status(400).send(err);
-        }
-        console.log("userInfo", userInfo);
-        const usrId = userInfo['id'];
-        const data = req.body['data'];
-        const pkOwn = userInfo['pk_own'];
-        const desc = req.body['desc'];
+        let uploadData = req.body;
+        uploadData.pk_own = userInfo['pk_own'];
+        uploadData.pk_enc = userInfo['pk_enc'];
+        uploadData.enc_data_path = fileStorePath + uploadData['h_ct'] + '.json';
 
-        const utf8buf = Buffer.from(data, 'utf-8');
-        const hexStr = FileSystem.rawFileToHexString(utf8buf);
-
-        const snarkInput = new SnarkInput.RegistData();
-        snarkInput.uploadData(FileSystem.hexStringToBigIntArr(hexStr));
-        // snarkInput.uploadPkOwnFromPrivKey(key);
-        snarkInput.uploadPkOwn(pkOwn);
-        snarkInput.encryptData();
-        snarkInput.makeSnarkInput();
-
-        libsnarkProver.uploadInputAndRunProof(snarkInput.toSnarkInputFormat(), "_" + snarkInput.gethCt());
-        const proofJson = libsnarkProver.getProofJson("_" + snarkInput.gethCt());
-        const verifySnarkFormat = snarkInput.toSnarkVerifyFormat();
-
-        console.log("proof Json : ", proofJson);
-
-        const fileJson = {
-            userId: usrId,
-            registDataProof: proofJson,
-            pk_own: pkOwn,
-            h_k: snarkInput.gethK(),
-            h_ct: snarkInput.gethCt(),
-            id_data: snarkInput.getIdData(),
-            CT_data: snarkInput.getsCtData(),
-        };
-
-        const DBuploadJson = {
-            id: usrId,
-            title: req.body['title'],
-            desc: req.body['desc'],
-            h_data: snarkInput.getIdData(),
-            enc_key: snarkInput.getEncKey(),
-            filePath: fileStorePath + snarkInput.gethCt() + '.json'
-        };
-
-        mySqlHandler.registDataQuery(DBuploadJson, (flag) => {
-            if (flag) {
-                res.status(200).send({
-                    flag: true,
-                    proof: proofJson,
-                    verifyInput: verifySnarkFormat
-                })
-                fs.writeFileSync(fileStorePath + snarkInput.gethCt() + '.json', JSON.stringify(fileJson));
-            } else {
+        console.log(uploadData);
+        mySqlHandler.registDataQuery(uploadData, (flag) => {
+            try {
+                if (flag) {
+                    res.status(200).send({
+                        'flag': true,
+                    })
+                    fs.writeFileSync(fileStorePath + uploadData['h_ct'] + '.json', JSON.stringify(uploadData, null, 2));
+                } else {
+                    res.status(400).send({
+                        'flag': false
+                    })
+                }
+            } catch (error) {
+                console.log(error);
                 res.status(400).send({
-                    flag: false,
-                    proof: null,
-                    verifyInput: null
+                    'flag': false
                 })
             }
+            
         })
-
     })
-});
+})
+
+router.get('/page/:ind', (req, res) => {
+    mySqlHandler.getDataList(ind, (err, ret) => {
+        console.log(ret);
+        res.send(ret);
+    })
+})
+
+
+router.get('/page', (req, res) => {
+    mySqlHandler.getAllDataList((err, ret) => {
+        console.log(ret);
+        res.send(ret);
+    })
+})
 
 export default router;

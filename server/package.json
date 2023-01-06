@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "nodemon": "nodemon --experimental-specifier-resolution=node index.js --watch ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
     "ganache-cli": "^6.12.2",
     "mysql": "^2.18.1",
     "random-words": "^1.2.0",
+    "react-async": "^10.0.1",
     "web3": "^1.8.1",
     "web3-eth-contract": "^1.8.1"
   },

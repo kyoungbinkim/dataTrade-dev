@@ -1,5 +1,6 @@
 import {
     registDataContract,
+    getRegistDataContract,
     hexToDec
 } from "./utils.js";
 

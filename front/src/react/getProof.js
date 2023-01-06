@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+
 import axios from 'axios'
 import Config from '../utils/config.js';
+import types from '../utils/types.js';
 import {MakePrivKey} from '../wallet/keyStruct.js';
 import contractInstance,{ setContractInstance } from '../contract/interface.js';
+import LoadingPage from './loading.js';
 import '../test/WalletCard.css'
 
 
@@ -23,6 +26,7 @@ const GetCTandProof = () => {
     const [verInput, serVerInput] = useState(null);
     const [proof, setProof] = useState([]);
     const [desc, setDesc] = useState("");
+    const [loading, setLoading] = useState(false);
     let fileReader = new FileReader();
 
     const titleChangeHandler = e => {
@@ -56,6 +60,7 @@ const GetCTandProof = () => {
     };
     
     const getProof = e =>{
+        setLoading(true);
         const fileData = {
             "id"    :`${sessionStorage.getItem("id")}`,
             "title" :`${title}`,
@@ -65,14 +70,15 @@ const GetCTandProof = () => {
             "data"  :`${textFile}`, 
             "id"    :`${sessionStorage.getItem("id")}`,
         }).then(res =>{
-
             if(res.data['flag']){
                 console.log(res.data);
                 setProof(res.data["proof"]);
                 serVerInput(res.data["verifyInput"]);
                 
-                fileData['proof'] = res.data["proof"];
+                fileData['proof']       = res.data["proof"];
                 fileData['verifyInput'] = res.data['verifyInput'];
+                fileData['id_data']     = types.decToHex(res.data['verifyInput'][4]);
+                fileData['h_ct']        = types.decToHex(res.data['verifyInput'][3]);
                 fileData['ct_data']     = res.data['ct_data'];
                 fileData['dataEncKey']  = res.data['dataEncKey'];
                 fileData['contractAddr']= res.data['contractAddr'];
@@ -89,6 +95,7 @@ const GetCTandProof = () => {
 
                 setContractInstance(res.data['contractAddr'], res.data['contractAbi']);
                 alert('get Proof 성공');
+                setLoading(false);
                 navigate(`/Eth`);
             }
         });
@@ -96,24 +103,29 @@ const GetCTandProof = () => {
 
     return (
         <div className='myCard'>
-            <h2>file upload Test</h2>
-            {/* <input className='buttonStyle' type="file" id="file"  onChange={handleChange} /> */}
-            <React.Fragment>
-                <button className='buttonStyle' onClick={handleButtonClick}>파일 업로드</button>
-                <input type="file"
-                    ref={fileInput}
-                    onChange={handleChange}
-                    style={{ display: "none" }} />
-            </React.Fragment><br/>
-            <input type='text' className='text' onChange={titleChangeHandler} placeholder=' 제목을 입력하시오.'></input><br/>
-            <textarea className='textDesc' onChange={descChangeHandler} placeholder='작품 설명을 입력하시오.'></textarea><br/>
-            <button className='buttonStyle' onClick={getProof}> 파일 전송 </button>
-            <p className='paragraph'> {textFile} </p>
+            {loading? <LoadingPage /> :
             <div>
-                proof : {proof}
-            </div><br/>
+                <h2>file upload Test</h2>
+                <input type='text' className='title' onChange={titleChangeHandler} placeholder=' 제목을 입력하시오.'></input><br/>
+                <textarea className='textDesc' onChange={descChangeHandler} placeholder='작품 설명을 입력하시오.'></textarea><br/>
+                {/* <input className='buttonStyle' type="file" id="file"  onChange={handleChange} /> */}
+                <React.Fragment>
+                    <button className='buttonStyle' onClick={handleButtonClick}>파일 업로드</button>
+                    <input type="file"
+                        ref={fileInput}
+                        onChange={handleChange}
+                        style={{ display: "none" }} />
+                </React.Fragment><br/>
+                
+                <button className='buttonStyle' onClick={getProof}> 파일 전송 </button>
+                <p className='paragraph'> {textFile} </p>
+                <div>
+                    proof : {proof}
+                </div><br/>
+            </div>
+            }
         </div>
-    );
+    )
 };
 
 function getByteLengthOfUtf8String(s) {

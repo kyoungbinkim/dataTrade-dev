@@ -16,79 +16,87 @@ describe('mysql test', ()=> {
     const nickname = "best Writer"
     const userInsertUserQuery = `INSERT INTO users(id, pwToken, nickname) VALUES('${id}', '${pwTk}', '${nickname}');`
     // const duplicateCheckQuery =  `select ${id}, count(${id}) from users group by id HAVING COUNT(id) >= 1;`;
-    const duplicateCheckQuery = `select id from users where id=?`;
-    const selectQuery = `select * from users`;
-    const userPwCheckQuery = `select id, pwToken from users where id=?`
+    const duplicateCheckQuery = `select id from user where id=?`;
+    const selectQuery = `select * from user`;
+    const userPwCheckQuery = `select id, pwToken from user where id=?`
 
     
     connect.connect();
-    it("first", (done) => {
+    // it("first", (done) => {
 
-        console.log(pwTk.length);
+    //     console.log(pwTk.length);
         
 
-        // connect.query(userInsertUserQuery, (err, result) => {
-        //     if(err) {console.log(err); return;}
-        //     console.log(result);
-        // })
+    //     // connect.query(userInsertUserQuery, (err, result) => {
+    //     //     if(err) {console.log(err); return;}
+    //     //     console.log(result);
+    //     // })
 
-        connect.query(`select id from users`, (err, row, field) => {
-            if(err){return;}
-            console.log(row);
-        })
+    //     connect.query(`select id from users`, (err, row, field) => {
+    //         if(err){return;}
+    //         console.log(row);
+    //     })
 
-        connect.query(selectQuery, (err, rows, feild) => {
-            if(err){console.log(err); return;}
-            console.log(rows);
-            // console.log(feild);
-        });
+    //     connect.query(selectQuery, (err, rows, feild) => {
+    //         if(err){console.log(err); return;}
+    //         console.log(rows);
+    //         // console.log(feild);
+    //     });
 
         
 
-        done();
-    }).timeout(1000);
+    //     done();
+    // }).timeout(1000);
 
-    it('duplicate query' , (done) => {
-        connect.query(duplicateCheckQuery,[`${id}`], (err, res)=>{
-            if(err) {console.log(err); return;}
-            console.log(res, res.length);
-        })
+    // it('duplicate query' , (done) => {
+    //     connect.query(duplicateCheckQuery,[`${id}`], (err, res)=>{
+    //         if(err) {console.log(err); return;}
+    //         console.log(res, res.length);
+    //     })
 
-        connect.query(duplicateCheckQuery, ['kim'], (err, res) => {
-            if(err) {console.log(err); return;}
-            console.log("query for kim : ", res);
-        })
+    //     connect.query(duplicateCheckQuery, ['kim'], (err, res) => {
+    //         if(err) {console.log(err); return;}
+    //         console.log("query for kim : ", res);
+    //     })
 
-        connect.query(`select max(seq)+1 as usrCnt from users;`, (err, res) =>{
-            console.log("select max(seq)+1 as usrCnt from users;", res[0].usrCnt);
-        })
+    //     connect.query(`select max(seq)+1 as usrCnt from users;`, (err, res) =>{
+    //         console.log("select max(seq)+1 as usrCnt from users;", res[0].usrCnt);
+    //     })
 
-        connect.query(userPwCheckQuery, ['lee2'], (err, row) =>{
-            if(err) {console.log(err); return;}
-            if(row.length == 0){
-                console.log("row: ", row);
-                return;
-            }
-            console.log(row[0].id, row[0].pwToken);
-        })
+    //     connect.query(userPwCheckQuery, ['lee2'], (err, row) =>{
+    //         if(err) {console.log(err); return;}
+    //         if(row.length == 0){
+    //             console.log("row: ", row);
+    //             return;
+    //         }
+    //         console.log(row[0].id, row[0].pwToken);
+    //     })
 
-        done();
-    }).timeout(1500);
+    //     done();
+    // }).timeout(1500);
     
-    it('end', (done) => {
-        connect.end();
-        done();
-    }).timeout(500);
+    // it('end', (done) => {
+    //     connect.end();
+    //     done();
+    // }).timeout(500);
 
-    it("mySqlhandler duplicate check", (done)=> {
+    // it("mySqlhandler duplicate check", (done)=> {
 
-        // mySqlHandler.idDuplicateCheckQuery("lee", (err, flag) => {
-        //     if(err) {console.log(err); return;}
-        //     console.log("check duplicate: ", flag);
-        // })
-        // console.log("check duplicate: ", mySqlHandler.idDuplicateCheckQuery("kim"));
+    //     // mySqlHandler.idDuplicateCheckQuery("lee", (err, flag) => {
+    //     //     if(err) {console.log(err); return;}
+    //     //     console.log("check duplicate: ", flag);
+    //     // })
+    //     // console.log("check duplicate: ", mySqlHandler.idDuplicateCheckQuery("kim"));
 
-        done();
-    }).timeout(1000);
+    //     done();
+    // }).timeout(1000);
+
+    it('page test', () => {
+        mySqlHandler.getDataList(0, (ret) => {
+            console.log(ret)
+            console.log(ret[0].title, ret[1].title);
+            connect.end();
+        })
+    })
 
 });

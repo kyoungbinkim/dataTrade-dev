@@ -101,21 +101,57 @@ export function userLoginQuery(userInfoJsonInput, callback){
 export function registDataQuery(registDataJsonInput, callback){
     const registDataJson = _.isString(registDataJsonInput) ? JSON.parse(registDataJsonInput) : registDataJsonInput;
 
-    const userId = registDataJson[`id`];
+    const userId = registDataJson[`id`] ?? registDataJson['userId'];
     const title  = registDataJson[`title`];
-    const desc   = registDataJson[`desc`] ?? registDataJson[`descript`];
+    const desc   = registDataJson[`desc`] ?? registDataJson[`descript`] ??registDataJson[`description`];
     const idData = registDataJson[`id_data`] ?? registDataJson[`h_data`];
     const encKey = registDataJson[`enc_key`] ?? registDataJson[`dataEncKey`] ?? registDataJson[`key`];
     const path   = registDataJson[`filePath`] ?? registDataJson[`enc_data_path`] ?? registDataJson[`path`];
-
+    const h_ct   = registDataJson[`h_ct`] ?? registDataJson[`hCt`];
     const registQuery = 
-    `INSERT INTO book (user_id, title, descript, h_data, enc_key, enc_data_path) 
-    VALUES('${userId}', '${title}', '${desc}', '${idData}', '${encKey}', '${path}');`
+    `INSERT INTO book (user_id, title, descript, h_data, enc_key, enc_data_path, h_ct) 
+    VALUES('${userId}', '${title}', '${desc}', '${idData}', '${encKey}', '${path}', '${h_ct}');`
 
     connection.query(registQuery, (err, result) => {
         if(err){console.log(err); callback(false); return;}
         callback(true);
-    })
+    }) 
+}
+
+export function getDataList(ind, callback) { 
+    const getDataQuery = 
+    `SELECT title, descript, user_id, enc_data_path from book LIMIT ${ind*10}, 10;`
+
+    try {
+        connection.query(getDataQuery, (err, result) => {
+            if(err){
+                console.log(err);
+                callback(err, undefined); 
+                return;
+            }
+            callback(undefined, result);
+        }) 
+    } catch (error) {
+        callback(error, undefined);
+    }
+}
+
+export function getAllDataList (callback){
+    const getDataQuery = 
+    `SELECT title, descript, user_id, enc_data_path from book;`
+
+    try {
+        connection.query(getDataQuery, (err, result) => {
+            if(err){
+                console.log(err);
+                callback(err, undefined); 
+                return;
+            }
+            callback(undefined, result);
+        }) 
+    } catch (error) {
+        callback(error, undefined);
+    }
 }
 
 const mySqlHandler = {
@@ -126,6 +162,8 @@ const mySqlHandler = {
     userJoinQuery,
     userLoginQuery,
     registDataQuery,
+    getAllDataList,
+    getDataList,
 };
 
 export default mySqlHandler;

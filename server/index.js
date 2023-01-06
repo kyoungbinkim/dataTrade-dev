@@ -7,5 +7,5 @@ import Config, { initConfig } from './src/core/utils/config';
 Config.homePath = process.cwd() + '/';
 
 initConfig();
-ganacheDeploy(); // deploy smart contracts to ganache 
+await ganacheDeploy(); // deploy smart contracts to ganache 
 server();

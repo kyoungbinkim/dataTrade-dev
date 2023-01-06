@@ -224,6 +224,15 @@ export function asciiToHex(str) {
     return arr.join('');
 }
 
+export function decToHex(decStr){
+    try {
+        return '0x' + BigInt(decStr).toString(16);
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+}
+
 const types = {
     isBigIntFormat,
     isHexStringFormat,
@@ -243,7 +252,8 @@ const types = {
     addPrefixHexFromArray,
     addPrefixAndPadHexFromArray,
     addComma,
-    asciiToHex
+    asciiToHex,
+    decToHex
 };
 
 

@@ -14,7 +14,7 @@ httpCli.defaults.baseURL = 'http://127.0.0.1:10801';
 httpCli.defaults.timeout = 30000;
 
 const RegistDataComponent = () => {
-    
+    const col = ['1','2','4'];
     const [fData, setFData] = useState(null);
 
     const [accountAddr, setAccountAddr] = useState(null);
@@ -25,6 +25,7 @@ const RegistDataComponent = () => {
 
     const [isRegisteredFlag, setIsRegisteredFlag] = useState(false);
     const [registDataRecipt, setRegistDataRecipt] = useState(null);
+    const [senderAddr, setSenderAddr] = useState(null);
 
     const setContractInstanceHandler = () => {
         console.log(sessionStorage.getItem('contractAbi'));
@@ -60,6 +61,10 @@ const RegistDataComponent = () => {
         sethCt(e.target.value);
     }
 
+    const senderAddrChangerHandler = (e) => {
+        setSenderAddr(e.target.value)
+    }
+
     const callIsRegistered = async (e) => {
         if(!hCt) { alert('write h_ct'); return;}
         //{ BigNumber: "6026189439794538201631" }
@@ -84,20 +89,36 @@ const RegistDataComponent = () => {
             const inputs = dataJson.verifyInput;
             console.log(proof, inputs)
 
-            const signer = getSinger('0xD6A29693c0297E9Fa14105BE6E645259733C4Fc6');
+            const signer = getSinger(senderAddr);
             console.log(signer)
             const constractWithSinger = (contractInstance()).connect(signer);
-
             const receipt = await constractWithSinger.registData(
                 proof, inputs
             )
             console.log(receipt);
-
+        
             setRegistDataRecipt(JSON.stringify(receipt));
         } catch (error) {
-            alert(error)
+            alert(error);
+            return;
         }
+        sendRegistDataServer();
+    }
+
+    /**
+     * post 필요한 데이터  title, decs  id, ct_data, dataEncKey, h_id, h_ct
+     */
+    const sendRegistDataServer = () => {
+        let uploadData = JSON.parse(sessionStorage.getItem('fileData'));
+        delete uploadData['verifyInput']
+        delete uploadData['contractAddr'];
+        delete uploadData['proof'];
         
+        httpCli.post("/data/data/upload", uploadData).then(
+            res => {
+                console.log(res);
+            }
+        )
     }
 
     const PrintArr = (arr) => {
@@ -118,7 +139,7 @@ const RegistDataComponent = () => {
             <div>
             {
                 JSON.parse( sessionStorage.getItem('proof')).map((val, ind) => (
-                    <div key={ind}>{ind} {':'} {val}</div>
+                    <div key={ind}> {val}</div>
                 ))
             }
             <br/>
@@ -131,7 +152,7 @@ const RegistDataComponent = () => {
             <div>
             {
                 JSON.parse( sessionStorage.getItem('verifyInput')).map((val, ind) => (
-                    <div key={ind}>{ind} {':'} {val}</div>
+                    <div key={ind}> {val}</div>
                 ))
             }
             <br/>
@@ -141,7 +162,8 @@ const RegistDataComponent = () => {
 
     return(
         <div className='myCard'>
-            <div>
+            <h2>RegistData Contract Test</h2>
+            <br/><div>
                 <button className='buttonStyle' onClick={setContractInstanceHandler}>set ContractIns</button>
             </div>
 
@@ -161,15 +183,23 @@ const RegistDataComponent = () => {
             </div>
 
             <div className='myCard'>
-                <h3>Proof</h3>
-                <p>[a:2 , b:4, c:2 ]</p>
-                <PrintProof/>
-                <h3 >verify Inputs</h3>
-                <p>inputs : [ constant(1) , pk_own , h_k , h_ct , id_data ]</p>
-                <PrintInputs/>
-                <button className='buttonStyle' onClick={sendRegistData}>send registData contract</button><br/>
-                Receipt : {registDataRecipt}
+                <div className='myCard'>
+                    <h3>Proof</h3>
+                    <p>[a:2 , b:4, c:2 ]</p>
+                    <PrintProof/>
+                </div>
 
+                <div className='myCard'>
+                    <h3 >verify Inputs</h3>
+                    <p>inputs : [ constant(1) , pk_own , h_k , h_ct , id_data ]</p>
+                    <PrintInputs/>
+                </div>
+                <input type='text' className='text' placeholder='write sender addr' onChange={senderAddrChangerHandler}></input>
+                <button className='buttonStyle' onClick={sendRegistData}>send registData Tx</button><br/>
+                Receipt : {registDataRecipt}
+                <br/><br/><br/><br/>
+
+                {/* <button onClick={sendRegistDataServer}> sendRegistDataServer</button> */}
             </div>
         </div>
     )

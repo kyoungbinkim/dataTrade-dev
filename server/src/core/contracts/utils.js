@@ -6,6 +6,15 @@ import fs from 'fs';
 export const web3Ins               = new Web3(Config.testProvider);
 export const registDataContractJson= JSON.parse( fs.readFileSync(contractsBuildPath+'RegistDataContract.json', 'utf-8'));
 export const registDataContract    = new web3Ins.eth.Contract(registDataContractJson.abi);
+export let   contractAddr          = null;
+
+export function getRegistDataContract(){
+    return  registDataContract;
+}
+
+export function setContractAddr(addr){
+    registDataContract.options.address = addr;
+}
 
 export function getVk(circuitName='RegistData'){
     return JSON.parse(
