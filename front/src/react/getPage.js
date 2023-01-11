@@ -35,7 +35,7 @@ export default () => {
             <div>
                 {
                     data.map((val, ind) => (
-                        <div key={ind}>{ind} {':'} {JSON.stringify(val)}</div>
+                        <div key={ind}>{ind} {':'} {JSON.stringify(val, null,2)}</div>
                     ))
                 }
                 <br/>
@@ -48,7 +48,8 @@ export default () => {
     if (data){
         return (
         <div>
-            <strong>Loaded some data:</strong>
+            <strong>Loaded data:</strong>
+            <PrintRet />
             <pre>
                 {
                     data.map((val, ind) => {

@@ -97,7 +97,7 @@ const RegistDataComponent = () => {
             )
             console.log(receipt);
         
-            setRegistDataRecipt(JSON.stringify(receipt));
+            setRegistDataRecipt(JSON.stringify(receipt, null, 2));
         } catch (error) {
             alert(error);
             return;

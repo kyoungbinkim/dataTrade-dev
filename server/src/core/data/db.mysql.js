@@ -120,7 +120,7 @@ export function registDataQuery(registDataJsonInput, callback){
 
 export function getDataList(ind, callback) { 
     const getDataQuery = 
-    `SELECT title, descript, user_id, enc_data_path from book LIMIT ${ind*10}, 10;`
+    `SELECT title, descript, user_id from book LIMIT ${ind*10}, 10;`
 
     try {
         connection.query(getDataQuery, (err, result) => {
@@ -138,7 +138,7 @@ export function getDataList(ind, callback) {
 
 export function getAllDataList (callback){
     const getDataQuery = 
-    `SELECT title, descript, user_id, enc_data_path from book;`
+    `SELECT title, descript, user_id from book;`
 
     try {
         connection.query(getDataQuery, (err, result) => {
