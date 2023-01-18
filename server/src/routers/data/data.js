@@ -5,7 +5,6 @@ import LibSnark from '../../core/libsnark/libsnark';
 import SnarkInput from '../../core/libsnark/struct/snarkInput';
 import FileSystem from '../../core/utils/file';
 import { isRegistered } from '../../core/contracts/registdata';
-import { registDataContract, hexToDec } from '../../core/contracts/utils';
 
 import {
     fileStorePath,
@@ -15,14 +14,16 @@ import {
 
 import {
     registDataInputJsonToContractFormat,
-    getContractAddr
 } from '../../core/contracts/registdata';
 
 import { 
-    getProof,
-    registDataContractJson
+    getContractProof,
+    ContractIns,
+    ContractJson,
+    hexToDec
  } from '../../core/contracts/utils';
 import mySqlHandler from '../../core/data/db.mysql';
+import { authMiddleWare } from '../../core/crypto/jwt';
 
 const router = express.Router();
 const libsnarkProver = new LibSnark("RegistData");
@@ -66,14 +67,14 @@ router.post('/getProof', (req, res) => {
 
             res.status(200).send({
                 flag: true,
-                proof: getProof(snarkInput.gethCt(), 'RegistData'),
+                proof: getContractProof(snarkInput.gethCt(), 'RegistData'),
                 verifyInput: registDataInputJsonToContractFormat(
                     verifySnarkFormat
                 ),
                 ct_data     : JSON.parse(snarkInput.getsCtData()),
                 dataEncKey  : '0x'+snarkInput.getEncKey(),
                 contractAddr: getContractAddr(),
-                contractAbi : registDataContractJson.abi,
+                contractAbi : ContractJson.abi,
                 id_data     : verifySnarkFormat['id_data'],
                 h_ct        : verifySnarkFormat['h_ct'],
             })
@@ -92,7 +93,7 @@ router.post('/getProof', (req, res) => {
  * post 필요한 데이터  title, decs  id, ct_data, dataEncKey, h_id, h_ct
  */
 router.post('/upload', (req, res) => {
-    console.log("!!", registDataContract.options.address);
+    console.log("!!", ContractIns.options.address);
     if(!isRegistered(hexToDec(req.body['h_ct']))){
         res.status(400).send({
             flag : false

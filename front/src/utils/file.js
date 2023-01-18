@@ -130,7 +130,7 @@ function checkFileExtionsion(filePath, extension){
 }
 
 
-function rawFileToBigIntString(rawData){
+export function rawFileToBigIntString(rawData){
     let arr = []
     for(let i=0; i<rawData.length; i++){
         arr.push(rawData[i].toString(16).padStart(2,'0'));

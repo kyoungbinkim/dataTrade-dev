@@ -2,16 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios'
 import Config from '../utils/config.js';
+import httpCli from '../utils/http.js';
 import contractInstance,{ getAccounts, getBalance, setContractInstance, getSinger } from '../contract/interface.js';
 import '../test/WalletCard.css'
 import { BigNumber } from 'ethers';
-
-
-const httpCli = axios.create();
-// default 설정 key 설정 등등. ..
-httpCli.defaults.baseURL = 'http://127.0.0.1:10801';
-// httpCli.defaults.withCredentials = true;
-httpCli.defaults.timeout = 30000;
 
 const RegistDataComponent = () => {
     const col = ['1','2','4'];

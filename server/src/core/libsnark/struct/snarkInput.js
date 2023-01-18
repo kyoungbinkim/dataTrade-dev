@@ -4,6 +4,8 @@ import Encryption from '../../crypto/encryption.js';
 import mimc from '../../crypto/mimc.js';
 import math from '../../utils/math.js';
 import CurveParam from '../../crypto/curveParam.js';
+import FileSystem from '../../utils/file.js';
+import { rawFileToBigIntString } from '../../utils/file.js';
 
 class RegistData {
     #data   = null;
@@ -28,7 +30,8 @@ class RegistData {
     }
 
     uploadDataFromHexStr(hexStr){
-
+        const hexStrPad = hexStr.padEnd(Config.dataBlockNum * CurveParam().blockBytes * 2, '0');
+        this.uploadData(FileSystem.hexStringToBigIntArr(hexStrPad));
     }
 
     uploadData(data){

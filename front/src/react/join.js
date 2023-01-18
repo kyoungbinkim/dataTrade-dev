@@ -1,113 +1,131 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import PasswordHelper from '../wallet/password.js';
-import UserKey, { MakePrivKey } from '../wallet/keyStruct.js';
 import axios from 'axios'
+import _ from 'lodash'
+
+import contractInstance,{ getAccounts, getBalance, setContractInstance, getSinger } from '../contract/interface.js';
+import httpCli from '../utils/http.js';
+import types from '../utils/types.js';
+import mimc from '../crypto/mimc.js';
+import math from '../utils/math.js';
 import Config from '../utils/config.js';
+import UserKey from '../wallet/keyStruct.js';
 import '../test/WalletCard.css'
 
-
-const httpCli = axios.create();
-// default 설정 key 설정 등등. ..
-httpCli.defaults.baseURL = 'http://127.0.0.1:10801';
-// httpCli.defaults.withCredentials = true;
-httpCli.defaults.timeout = 2500;
-
 export default function JoinService() {
-
-    const navigate = useNavigate();
-    const [id, setId] = useState(null);
-    const [pw, setPw] = useState(null);
-    const [pwTk, setPwTk] = useState(null);
-    const [pwTk2, setPwTk2] = useState(null);
-    const [idCheck, setIdCheck] = useState(false);
-    const [pwCheck, setPwCheck] = useState(null);
-
-    const onChangeId = (e) => {
-        console.log(e.target.value, e.target.type);
-        setId(e.target.value);
-        setIdCheck(false);
-    };
-
-    const onChangePw = (e)=> {
-        if (!e.target.value){return;}
-        const passwordToken = PasswordHelper.getPassWordToken(e.target.value);
-        setPwTk(passwordToken);
-    };
     
-    const onChangePw2 = (e)=> {
-        const passwordToken = PasswordHelper.getPassWordToken(e.target.value);
-        setPwTk2(passwordToken);
-        setPw(e.target.value);
-    };
+    const mimc7 = new mimc.MiMC7();
+    const navigate = useNavigate();
+    
+    const [accounts, setAccounts] = useState([]);
+    const [key, setKey]          = useState(null);
+    const [nickname, setNickname] = useState(null);
+    const [deduplication, setDeduplication] = useState(false);
 
-    const duplicateHandler = async e => {
+    const onClickSkOwnGen = async (e) => {   
+
+        const key = UserKey.keyGen();
+        sessionStorage.setItem('key', key.toJson());
         
-        if(id.length > (Config.maxIdLen)){
-          alert("Id is too long");
-          return;
-        }
-        const res = await httpCli.get(`/usr/join/duplicate/${id}`);
-        console.log(res.data, "if false, already exsist");
-        if(!res.data){ alert("id already exsist!"); return; }
-        else{ alert(`you can use "${id}"`); }
-        setIdCheck(res.data);
+        setAccounts(await getAccounts());
+        console.log(await getAccounts())
+        
+        setKey(JSON.parse(key.toJson()));
+        alert("반드시 기억하세요!")
+        alert('0x'+key.skOwn);
+        setNickname(null);
+        setDeduplication(false);
     };
 
-    const joinHandler = async e => {
-      if(!idCheck){
-        alert("you should check id");
-        return;
-      }
-      if(!(pwTk === pwTk2)){
-        alert("pw is different");
-        return;
-      }
-
-      const pubkey = UserKey.UserKey.recoverFromIdPw(id, pw);
-      const idpw = {"id":`${id}`, "pw":`${pwTk}`}
-      const joinData =  Object.assign(idpw, JSON.parse(pubkey.pubKeyToJson()));
-  
-      console.log(joinData);
-      httpCli.post("/usr/join/join", joinData).then(res =>{
-        console.log(res.data);
-        if(res.data["flag"] === false){
-          alert("id or data is wrong");
-          return;
-        }
-        alert("sucess Join");
-        navigate(`/`);
-      });
+    const onChangeNickname = (e) => {
+        setNickname(e.target.value);
+        setDeduplication(false);
     }
 
-    const printPwCheck = () =>{
-        if(!pwTk2){
-          return "";
+    const onChangeEOA = (e) => {
+        sessionStorage.setItem('EOA', e.target.value);
+    }
+
+    const onClickDeduplication = async (e) => {
+
+        const res = await httpCli.get(`/usr/join/check/${nickname}`);
+        if(!res.data){ alert("id already exsist! 😭"); return; }
+        else{ alert(` you can use "${nickname}"🎉`); }
+        setDeduplication(true);
+    }
+
+    const onClickJoin = (e) => {
+        const key = JSON.parse(sessionStorage.getItem('key'));
+        console.log(_.get(key,'skOwn'));
+        let joinQuery = {
+            loginTk : mimc7.hash(_.get(key,'skOwn'), types.asciiToHex('login')),
+            nickname: nickname,
+            skEnc   : _.get(key, 'skOwn'),
+            pkOwn   : _.get(key, 'pkOwn'),
+            pkEnc   : _.get(key, 'pkEnc'),
+            addr    : _.get(key, 'ena'),
+            EOA     : sessionStorage.getItem('EOA'),
         }
-        if(pwTk === pwTk2){
-          return "비밀번호가 같습니다."
-        }
-        else{
-          return "비밀번호가 다릅니다."
-        }
+        httpCli.post("/usr/join/join", joinQuery).then(res =>{
+            console.log(res.data);
+            if(res.data["flag"] === false){
+              alert("이미가입되었거나 올바르지 않은 주소입니다.");
+              return;
+            }
+            alert("sucess Join");
+            sessionStorage.removeItem('key');
+            navigate(`/`);
+        });
+    }
+
+    const PrintArr = () => {
+        return(
+            <div className='paragraph'>
+                <h4>eth Address</h4>
+                {
+                    accounts.map((val, ind) => (
+                        <div key={ind}>{ind} {':'} {val}</div>
+                    ))
+                }
+                <br/>
+            </div>
+        )
     }
 
     return (
         <div className='Card'>
-            <h3>Join Test</h3>
-            <div>
-                <input type="text" className='text' onChange={onChangeId} placeholder="write your id"></input>
-                <button className='buttonStyle' onClick={ duplicateHandler }> Id Check</button>
-                <p></p>
-            </div>
-            <div>
-                <input className='text' onChange={onChangePw} placeholder="write your password"></input> <br/>
-                <input className='text' onChange={onChangePw2} placeholder="rewrite your password"></input>
-                <p>{ printPwCheck() }</p>
-            </div>
-            <div>
-                <button className='buttonStyle' onClick={joinHandler}> Join </button>
-            </div>
+            <h3>Join</h3>
+            {!key ? 
+                <div>
+                    <button className='buttonStyle' onClick={onClickSkOwnGen}> 🔑 비밀키 생성기 🔑 </button><br/>
+                </div>:
+                <div className='myCard'>
+                    <div className='paragraph'>
+                        <h3> 🔐 </h3>
+                        <strong> SK_own : {'0x'+_.get(key, 'skOwn')}</strong><br/>
+                        <strong> PK_own : {'0x'+_.get(key, 'pkOwn')}</strong><br/>
+                        <strong> SK_enc : {'0x'+_.get(key, 'skEnc')}</strong><br/>
+                        <strong> PK_enc : {'0x'+_.get(key, 'pkEnc')}</strong><br/>
+                        <strong> addr  : {' 0x'+_.get(key, 'ena')}</strong><br/><br/>
+                    </div>
+                    
+                    <PrintArr/>
+                    <div>
+                        <input type='text' className='text' onChange={onChangeEOA} placeholder='write your EOA addr'></input>
+                        <input type='text' className='text' onChange={onChangeNickname} placeholder='write your nickname'></input>
+                        <button className='buttonStyle' onClick={onClickDeduplication}>중복확인</button><br/>
+                    </div>
+                    {
+                        deduplication ?
+                        <div>
+                            <button className='buttonStyle' onClick={onClickJoin}>🌈 𝑱 𝐨 ℹ 𝓷✨</button>
+                        </div> 
+                        :<div><br/><br/></div> 
+                    }
+                </div>
+            }
+
+
         </div>
     );
 };

@@ -3,17 +3,25 @@ import Config, {contractsBuildPath, fileStorePath} from "../utils/config.js";
 import Web3 from 'web3';
 import fs from 'fs';
 
-export const web3Ins               = new Web3(Config.testProvider);
-export const registDataContractJson= JSON.parse( fs.readFileSync(contractsBuildPath+'RegistDataContract.json', 'utf-8'));
-export const registDataContract    = new web3Ins.eth.Contract(registDataContractJson.abi);
-export let   contractAddr          = null;
+export const web3Ins               = new Web3();
+web3Ins.setProvider(new Web3.providers.HttpProvider(Config.testProvider));
+// export const registDataContractJson= JSON.parse( fs.readFileSync(contractsBuildPath+'RegistDataContract.json', 'utf-8'));
+// export const registDataContract    = new web3Ins.eth.Contract(registDataContractJson.abi);
+// export let   contractAddr          = null;
 
-export function getRegistDataContract(){
-    return  registDataContract;
-}
+export const ContractJson    = JSON.parse(fs.readFileSync(contractsBuildPath+'dataTradeContract.json', 'utf-8'))
+export const ContractIns     = new web3Ins.eth.Contract(ContractJson.abi);
 
 export function setContractAddr(addr){
-    registDataContract.options.address = addr;
+    ContractIns.options.address = addr
+}
+
+export function getContractAddr(){
+    return ContractIns.options.address;
+}
+
+export function isDeployed() {
+    return ContractIns.options.address ? true : false;
 }
 
 export function getVk(circuitName='RegistData'){
@@ -23,6 +31,13 @@ export function getVk(circuitName='RegistData'){
 }
 
 export function getProof(hCt, circuitType){
+    const proofJson = JSON.parse(
+        fs.readFileSync(fileStorePath+circuitType+'_' + hCt + '_proof.json', 'utf-8')
+    )
+    return proofFlat(proofJson);
+}
+
+export function getContractProof(hCt, circuitType){
     const proofJson = JSON.parse(
         fs.readFileSync(fileStorePath+circuitType+'_' + hCt + '_proof.json', 'utf-8')
     )
@@ -100,7 +115,8 @@ export function proofFlat(proofJson) {
 const contractUtils = {
     hexToDec,
     proofFlat,
-    getContractFormatVk
+    getContractFormatVk,
+    isDeployed
 };
 
 export default contractUtils;

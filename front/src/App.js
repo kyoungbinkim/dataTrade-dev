@@ -6,11 +6,12 @@ import {Mimc7Card} from './test/mimc7test.js';
 import ClockDisplay from "./test/clockDisplay.js";
 import WalletCard from "./test/WalletCard.js";
 import EncDataTest from './test/encryptionTest.js';
-import FileUpload from './test/fileUploadTest.js';
 import UserKey from './test/keyTest.js';
 import GetCTandProof from "./react/getProof.js";
-import RegistDataComponent from "./react/registData.js";
+import RegistDataComponent from "./react/registerData.js";
 import ListPage from './react/getPage.js'
+// import LoginService2 from './react/login_new.js';
+import httpCli from "./utils/http.js";
 import './test/WalletCard.css'
  
 export default function App() {
@@ -24,10 +25,9 @@ export default function App() {
           <Route path="Join" element={<JoinApp />} />
           <Route path="Login" element={<LoginApp />} />
           <Route path="Logout" element={<Logout/>}/>
-          {/* <Route path="Regist" element= {<RegistData/>}/> */}
-          <Route path="Regist" element={<GetProof/>}/>
-          <Route path="Eth" element={<RegistDataComponent/>} />
-          <Route path="list" element={  <ListPage/>} />
+          <Route path="Regist" element= {<RegistData/>}/>
+          {/* <Route path="Regist" element={<RegistDataComponent/>}/> */}
+          <Route path="list" element={<DataList/>} />
           <Route path="*" element={<NoMatch />} />
         </Route>
       </Routes>
@@ -77,8 +77,10 @@ function Layout() {
 function Home() {
   if(!sessionStorage.getItem("isLogin")){
     return (
-      <div>
+      <div className="Card">
         <h2 className="App-text">Home</h2>
+        {/* <JoinService />
+        <LoginService /> */}
       </div>);
   }
   return(
@@ -88,7 +90,7 @@ function Home() {
       <WalletCard />
       <UserKey.UserKeyTest />
       <EncDataTest.EncData />
-      <FileUpload />
+      <RegistDataComponent />
     </div>
   );
 }
@@ -150,26 +152,29 @@ function Logout(){
   }else{
     alert("login first");
   }
+  delete httpCli.defaults.headers.common['access-token']
   sessionStorage.clear();
+  
   return (
     <Navigate to="/"/>
   );
+}
+
+
+function DataList(){
+  return(
+    LoginCheck(false)??
+    <div>
+      <ListPage/>
+    </div>
+  )
 }
 
 function RegistData(){
   return(
     LoginCheck(false)??
     <div className="myCard">
-      <FileUpload/>
-    </div>
-  );
-}
-
-function GetProof(){
-  return(
-    LoginCheck(false)??
-    <div className="myCard">
-      <GetCTandProof/>
+      <RegistDataComponent/>
     </div>
   );
 }

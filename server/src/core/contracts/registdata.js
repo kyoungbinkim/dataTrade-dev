@@ -1,15 +1,15 @@
 import {
-    registDataContract,
-    getRegistDataContract,
-    hexToDec
+    ContractIns,
+    hexToDec,
+    isDeployed
 } from "./utils.js";
 
-export function isDeployed() {
-    return registDataContract.options.address ? true : false;
-}
+// export function isDeployed() {
+//     return ContractIns.options.address ? true : false;
+// }
 
 export function getContractAddr(){
-    return registDataContract.options.address;
+    return ContractIns.options.address;
     
 }
 
@@ -24,11 +24,25 @@ export async function isRegistered(h_ct) {
         return;
     }
 
-    const flag = await registDataContract.methods.isRegistered(h_ct).call();
+    const flag = await ContractIns.methods.isRegistered(h_ct).call();
     return flag
 }
 
-export async function registData(proof, inputs, fromAddr, GasPrice) {
+export async function isRegisteredData(h_ct){
+    if (!isDeployed()) {
+        console.log('deploy first ');
+        return false;
+    }
+    try {
+        const flag = await ContractIns.methods.isRegistered(h_ct).call();
+        return flag
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
+export async function registDataContract(proof, inputs, fromAddr, GasPrice) {
     if (!isDeployed()) {
         console.log('deploy first ');
         return false;
@@ -41,17 +55,24 @@ export async function registData(proof, inputs, fromAddr, GasPrice) {
         console.log('invalid inputs length');
         return false;
     }
-
-
-    const receipt = await registDataContract.methods.registData(
-        proof,
-        inputs
-    ).send({
-        from: `${fromAddr}`,
-        gas: `294814`,
-        gasPrice: `${GasPrice}`
-    })
-    console.log(receipt);
+    console.log(ContractIns.options.address);
+    const gasFee = await ContractIns.methods.registData(proof, inputs).estimateGas();
+    console.log("gasFee : ", gasFee);
+    try {
+        const receipt = await ContractIns.methods.registData(
+            proof,
+            inputs
+        ).send({
+            from: `${fromAddr}`,
+            gas: gasFee,
+            gasPrice: `${GasPrice}`
+        })
+        console.log(receipt);
+        return receipt;
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
 }
 
 export function registDataInputJsonToContractFormat(inputJson) {

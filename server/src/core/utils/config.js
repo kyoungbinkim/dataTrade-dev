@@ -1,5 +1,7 @@
 /* global BigInt */
 
+import bluebird from 'bluebird';
+
 var Config = {
     homePath        : '/Users/kim/dataTrade-dev-backup/server/',
     
@@ -25,6 +27,7 @@ export const mysqlConfig = {
     user    : 'dataTradeServer',
     password: 'Itsp7501`',
     database: 'trade_db',
+    Promise : bluebird,
 };
 
 
@@ -34,7 +37,6 @@ export let ganacheAccountKeyPath    = Config.homePath + `../tradeContract/keys.j
 export let contractsBuildPath       = Config.homePath + `../tradeContract/build/contracts/`
 export let proofStorePath = ``
 export let snarkPath                = Config.homePath + 'src/core/libsnark/js-libsnark-opt/libsnark/'
-
 
 
 export function initConfig(){

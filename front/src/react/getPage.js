@@ -3,20 +3,23 @@ import { useAsync } from 'react-async';
 import { Routes, Route, Outlet, Link, useNavigate, Navigate } from "react-router-dom";
 import PasswordHelper from '../wallet/password.js';
 import UserKey, { MakePrivKey } from '../wallet/keyStruct.js';
-import axios from 'axios'
 import Config from '../utils/config.js';
+import httpCli from '../utils/http.js';
 import '../test/WalletCard.css'
 
-const httpCli = axios.create();
-// default 설정 key 설정 등등. ..
-httpCli.defaults.baseURL = 'http://127.0.0.1:10801';
-// httpCli.defaults.withCredentials = true;
-httpCli.defaults.timeout = 2500;
+
 
 const loadDataList = async () => {
-    const ret = (await httpCli.get(`/data/data/page`)).data;
-    console.log(ret, JSON.stringify(ret[0]));
-    return ret;
+    const ret = (await httpCli.get(`/data/page`)).data;
+    const test = (await httpCli.get(`data/page/0`)).data;
+    if(ret === 'err'){
+
+        sessionStorage.clear();
+        alert('다시 로그인하세요')
+        return [];
+    }
+    console.log(ret);
+    return ret.data;
     return JSON.stringify(ret);
 }
 
@@ -26,9 +29,7 @@ export default () => {
 
     const [ret, setRet] = useState([]);
 
-    
-    // const ret = (await httpCli.get(`/data/data/page`)).data;
-    //     console.log(ret);
+
     const PrintRet = () => {
         
         return(
@@ -50,13 +51,13 @@ export default () => {
         <div>
             <strong>Loaded data:</strong>
             <PrintRet />
-            <pre>
+            {/* <pre>
                 {
                     data.map((val, ind) => {
                         <div key={ind}> {val} {ind} </div>
                     })
                 }
-            </pre>
+            </pre> */}
         </div>
         )
     }

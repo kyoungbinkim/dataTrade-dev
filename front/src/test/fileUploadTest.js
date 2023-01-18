@@ -4,7 +4,6 @@ import axios from 'axios'
 import Config from '../utils/config.js';
 import {MakePrivKey} from '../wallet/keyStruct.js';
 import './WalletCard.css'
-import { getPropertyOfType } from 'tsutils';
 
 const httpCli = axios.create();
 // default 설정 key 설정 등등. ..

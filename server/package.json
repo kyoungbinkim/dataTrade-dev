@@ -5,19 +5,23 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "nodemon": "nodemon --experimental-specifier-resolution=node index.js --watch ./src",
+    "nodemon": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql && nodemon --experimental-specifier-resolution=node index.js --watch ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql"
+    "clean": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql",
+    "dev": "mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bluebird": "^3.7.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "ganache-cli": "^6.12.2",
+    "jsonwebtoken": "^9.0.0",
     "mysql": "^2.18.1",
+    "mysql2": "^3.0.1",
     "random-words": "^1.2.0",
     "react-async": "^10.0.1",
     "web3": "^1.8.1",

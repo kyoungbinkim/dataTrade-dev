@@ -14,3 +14,5 @@ tradeContract/contracts/artifacts/
 
 *.dat
 *.dylib
+*_backup.js
+*_backup.sql

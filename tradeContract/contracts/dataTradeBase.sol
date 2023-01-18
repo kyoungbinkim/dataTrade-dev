@@ -3,12 +3,22 @@ pragma solidity ^0.8.2;
 
 import "./Groth16AltBN128.sol";
 
-contract dataTradeContract {
+contract DataTradeContract {
+
+    struct userInfo {
+        uint256 addr;
+        uint256 pk_enc;
+        uint256 pk_own;
+    }
 
     // h_ct list
     mapping(uint256 => bool) internal _hCT_list;
 
+    //addr 
     mapping(uint256 => bool) internal _addr_list;
+
+    // EOA -> user keys
+    mapping(address => userInfo) _userInfoMap;
 
     // registData SNARK Proof input num
     uint256 private constant REGISTDATA_NUM_INPUTS = 5;
@@ -21,6 +31,34 @@ contract dataTradeContract {
         registData_vk = _registData_vk;
     }
 
+
+    function registUser(
+        uint256 addr,
+        uint256 pk_own, 
+        uint256 pk_enc
+    ) 
+        public
+        payable
+    {   
+        require(!_addr_list[_userInfoMap[msg.sender].addr], "msg.sender already exist");
+        require(!_addr_list[addr], "User already exist");
+
+        _addr_list[addr] = true;
+
+        _userInfoMap[msg.sender].addr = addr;
+        _userInfoMap[msg.sender].pk_enc = pk_enc;
+        _userInfoMap[msg.sender].pk_own = pk_own;
+    }
+
+    function isRegisteredUser(
+        uint256 addr
+    ) 
+        public 
+        view 
+        returns (bool) 
+    {
+        return _addr_list[addr];
+    }
 
     /*
         inputs : [ constant(1) , pk_own , h_k , h_ct , id_data ]
