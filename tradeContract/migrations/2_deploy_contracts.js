@@ -10,7 +10,7 @@ function hexToDex(hexStr){
 const Groth16AltBN128Lib = artifacts.require('Groth16AltBN128');
 const Groth16AltBN128Test = artifacts.require('Groth16AltBN128Test');
 
-const vkJson = JSON.parse(fs.readFileSync('/Users/kim/workspace/nodejs-web3/zklay_contracts/test/RegistData_crs_vk.json'));
+const vkJson = JSON.parse(fs.readFileSync('../test/RegistData_crs_vk.json'));
 
 let tmp = [];
 for (let i = 0; i < 2; i++) {

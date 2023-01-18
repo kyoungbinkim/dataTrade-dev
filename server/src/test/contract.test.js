@@ -7,13 +7,19 @@ import ABI from "../../../tradeContract/build/contracts/ZklayBase.json";
 //     { brown:24, yellow:24, expected_value:[8, 6] }
 // ];
 
-describe("test.js 알고리즘 실행 결과", () => {
+const RPC = 'HTTP://127.0.0.1:7545';
+const CA = '0x9Ac4b810F079ACB7C025d61FCEFeDB223e1917bF';// contract address
+const AA = [//account address
+    '0xEf25BBbe92d0056824E24529A514c8853E3786D2',
+];
+
+describe("contract.test.js 알고리즘 실행 결과", () => {
     
     it("test_case ", async (done) => {
         
-        let web3 = new Web3(new Web3.providers.HttpProvider('HTTP://127.0.0.1:7545'));
-        let contract = new web3.eth.Contract(ABI.abi, '0x9Ac4b810F079ACB7C025d61FCEFeDB223e1917bF');// contract address
-        await contract.methods.enroll(2).send({from :'0xEf25BBbe92d0056824E24529A514c8853E3786D2'});//account address
+        let web3 = new Web3(new Web3.providers.HttpProvider(RPC));
+        let contract = new web3.eth.Contract(ABI.abi,CA );
+        await contract.methods.enroll(2).send({from : AA[0]});
         const num1 = await contract.methods.getnumber().call();
     })
     
