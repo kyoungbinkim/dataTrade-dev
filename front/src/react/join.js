@@ -72,7 +72,10 @@ export default function JoinService() {
               alert("이미가입되었거나 올바르지 않은 주소입니다.");
               return;
             }
-            alert("sucess Join");
+            console.log(res.data['receipt']['blockHash'], res.data['receipt']['transactionHash'])
+            alert("sucess Join"+ 
+                "\n\nblockHash : " + res.data['receipt']['blockHash']+
+                "\ntxHash : " + res.data['receipt']['transactionHash'] +'\n');
             sessionStorage.removeItem('key');
             navigate(`/`);
         });
@@ -111,7 +114,7 @@ export default function JoinService() {
                     
                     <PrintArr/>
                     <div>
-                        <input type='text' className='text' onChange={onChangeEOA} placeholder='write your EOA addr'></input>
+                        <input type='text' className='text' onChange={onChangeEOA} placeholder='write your EOA addr'></input><br/>
                         <input type='text' className='text' onChange={onChangeNickname} placeholder='write your nickname'></input>
                         <button className='buttonStyle' onClick={onClickDeduplication}>중복확인</button><br/>
                     </div>
