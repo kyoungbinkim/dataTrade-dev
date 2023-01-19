@@ -17,9 +17,11 @@ CREATE TABLE user (
     eoa_addr varchar(64) NOT NULL,
     PRIMARY KEY (user_idx),
     UNIQUE (login_tk),
-    UNIQUE (nickname),
-    UNIQUE (eoa_addr)
+    UNIQUE (nickname)
 );
+-- 원래 user에 추가해야함.
+-- UNIQUE (eoa_addr)
+
 
 DROP TABLE IF EXISTS data;
 CREATE TABLE data (
