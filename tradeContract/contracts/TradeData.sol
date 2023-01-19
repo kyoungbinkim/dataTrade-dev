@@ -19,11 +19,15 @@ contract TradeDataContract is BaseMerkleTree{
     mapping(uint256 => bool) private waitTradeList;
     mapping(uint256 => bool) private _addrList;
     mapping(uint256 => AddressMap) private userPkList;
+    mapping(uint256 => uint256) private dataDecKeyList;
     
     //  SNARK Proof input num
     uint256 private constant REGISTDATA_NUM_INPUTS = 5;
     uint256 private constant ORDER_NUM_INPUTS = 8;
-    uint256 private constant DEC_KEY_NUM_INPUTS = 2;
+    uint256 private constant DEC_KEY_NUM_INPUTS = 3;
+
+    //
+    uint256 private constant CT_ORDER_NUM_INPUTS = 6;
 
     //  SNARK vk
     uint256[] private registData_vk;
@@ -33,7 +37,7 @@ contract TradeDataContract is BaseMerkleTree{
 
     constructor(
         uint256[] memory _registData_vk,
-        uint256[] memory _orderVk, 
+        uint256[] memory _orderVk,
         uint256[] memory _decKeyVk
         )
     {
@@ -43,19 +47,19 @@ contract TradeDataContract is BaseMerkleTree{
     }
 
     event LogOrder(
-        uint256 ctOrder
+        uint256[6] ctOrder
     );
 
     // user pk
     function registerUser(
         uint256 pkOwn,
         uint256 pkEnc
-    ) 
+    )
     public
     returns (bool) {
-        bytes32 _addr = MiMC7._hash(bytes32(pkOwn), bytes32(pkEnc));
-        uint256 addr = uint256(_addr);
-        require(!_addrList[addr], 'User already exist');
+        bytes32 memory _addr = MiMC7._hash(bytes32(pkOwn), bytes32(pkEnc));
+        uint256 memory addr = uint256(_addr);
+        require(!_addrList[addr], "User already exist");
         _addrList[addr] = true;
         _addressMap[addr].PkOwn = pkOwn;
         _addressMap[addr].PkEnc = pkEnc;
@@ -65,14 +69,14 @@ contract TradeDataContract is BaseMerkleTree{
 
     function getUserPK(
         uint256 addr
-        )
-        public 
-        view 
-        returns(uint256, uint256){
-            require(_addrList[addr], 'User no exist');
-            return (
-                userPkList[addr].PkOwn,
-                userPkList[addr].PkEnc);
+    )
+    public
+    view
+    returns(uint256, uint256){
+        require(_addrList[addr], "User no exist");
+        return (
+            userPkList[addr].PkOwn,
+            userPkList[addr].PkEnc);
     }
 
     // register data
@@ -82,11 +86,11 @@ contract TradeDataContract is BaseMerkleTree{
     function registData(
         uint256[] memory proof,
         uint256[REGISTDATA_NUM_INPUTS] memory inputs
-    ) 
-        public 
-        payable 
+    )
+        public
+        payable
         returns(bool)
-    {   
+    {
         // check input length
         require( inputs.length == REGISTDATA_NUM_INPUTS, "invalid Input length");
         
@@ -103,10 +107,10 @@ contract TradeDataContract is BaseMerkleTree{
         return _hCT_list[input_values[3]];
     }
 
-    function isRegistered(uint256 _hct) 
-        public 
-        view 
-        returns(bool) 
+    function isRegistered(uint256 _hct)
+        public
+        view
+        returns(bool)
     {
         return _hCT_list[_hct];
     }
@@ -116,9 +120,9 @@ contract TradeDataContract is BaseMerkleTree{
         uint256[] memory proof,
         uint256[ORDER_NUM_INPUTS] memory inputs
     )
-        public 
-        payable 
-        returns(bool) 
+        public
+        payable
+        returns(bool)
     {
         //verify proof
         // check input length
@@ -130,26 +134,31 @@ contract TradeDataContract is BaseMerkleTree{
         }
         require( Groth16AltBN128._verify(orderVk, proof, input_values), "invalid proof");
 
-        //stack cm
+        //stack cm to wait trade list
         waitTradeList[input_values[0]] = true;
         waitTradeList[input_values[1]] = true;
 
         // emit(CT)
+        uint256[] memory ctOder = new uint256[](CT_ORDER_NUM_INPUTS);
+        for (uint256 i = 0 ; i < CT_ORDER_NUM_INPUTS; i++) {
+            ctOder[i] = input_values[i+2];
+        }
+
         emit LogOrder(
-            input_values[3]
+            ctOder
         );
 
         return true;
     }
     
-    function sendDecKey(
+    function registerDecKey(
         uint256[] memory proof,
         uint256[DEC_KEY_NUM_INPUTS] memory inputs
-    ) 
-        public 
-        payable 
+    )
+        public
+        payable
         returns(bool)
-    {   
+    {
         // verify
         require( inputs.length == DEC_KEY_NUM_INPUTS, "invalid Input length");
         
@@ -159,20 +168,25 @@ contract TradeDataContract is BaseMerkleTree{
         }
         require( Groth16AltBN128._verify(decKeyVk, proof, input_values), "invalid proof");
 
+        // pop cm from wait trade list
         waitTradeList[input_values[0]] = false;
         waitTradeList[input_values[1]] = false;
-        //
-        //TradeACC += cm,cm
-        [input_values[0]] = ctKey;
+        
+        // TradeACC += cm,cm
+
+
+        // store CT key
+        dataDecKeyList[input_values[0]] = input_values[3];
 
         return true;
     }
-	
-	function getDecKey(
+
+    function getDecKey(
         uint256 cm
-        ) 
-        public 
-        view 
-        returns(){
-        return ctKey;
+        )
+        public
+        view
+        returns(uint256){
+        return dataDecKeyList[cm];
     }
+}
