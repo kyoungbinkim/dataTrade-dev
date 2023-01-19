@@ -20,4 +20,5 @@ export async function registUser(inputs, EOA, GasPrice) {
         gasPrice: `${GasPrice}`
     })
     console.log("registUser : ", receipt);
+    return receipt;
 }

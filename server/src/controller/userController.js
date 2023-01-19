@@ -29,8 +29,11 @@ export const joinController = async (req, res) => {
             hexToDec(req.body['pkEnc'])
         ]
         try {
-            await registUser(inputs, req.body['EOA'], '0x1');
-            res.status(200).send({flag: true});
+            const receipt = await registUser(inputs, req.body['EOA'], '0x1');
+            res.status(200).send({
+                flag: true,
+                receipt : receipt
+            });
         } catch (error) {
             console.log(error);
             res.status(200).send({flag: false});
