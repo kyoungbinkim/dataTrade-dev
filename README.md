@@ -9,6 +9,9 @@
 > front/src/utils:   
 > front/src/test:  react code  
 
+#### prepare libsnark lib
+compile from libsnark-optimization and copy lib file to ```server/src/core/libsnark/js-libsnark-opt/libsnark```
+
 
 #### install front
 	cd front
