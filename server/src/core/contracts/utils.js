@@ -20,6 +20,10 @@ export function getContractAddr(){
     return ContractIns.options.address;
 }
 
+export function getAllAddr() {
+    return web3Ins.eth.getAccounts();
+}
+
 export function isDeployed() {
     return ContractIns.options.address ? true : false;
 }

@@ -2,7 +2,8 @@ import {
     getContractProof,
     ContractIns,
     ContractJson,
-    hexToDec
+    hexToDec,
+    getAllAddr
 } from '../core/contracts/utils';
 
 import { 
@@ -19,4 +20,8 @@ export const callIsRegisteredDataController = async (req, res) => {
     const flag = await isRegisteredData(h_ct);
 
     res.send(flag);
+}
+
+export const getAllAddressController = async (req, res) => {
+    res.send(getAllAddr());
 }

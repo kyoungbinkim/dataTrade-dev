@@ -7,6 +7,7 @@ import { hexToDec } from './../core/contracts/utils.js';
 
 
 export const deduplicateCheckController = async (req, res) => {
+    console.log(req.params);
     const nickname = req.params.nickname;
     mySqlHandler.nicknameDuplicateCheckQuery(nickname, (err, flag) =>{
         if(err) {return res.status(200).send(flag);}

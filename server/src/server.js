@@ -15,7 +15,9 @@ const server = async () => {
     //     응답.sendFile(path.join(__dirname, '../front/build/index.html'));
     // });
 
-    app.use(cors());
+    app.use(cors({
+        origin: '*', // 모든 출처 허용 옵션. true 를 써도 된다.
+    }));
     app.use(bodyParser.json());
     app.use('/', rootRouter);   // 서버가 실행되기 전에 set 라우터 지정
     
