@@ -36,6 +36,7 @@ export function nicknameDuplicateCheckQuery(nickname, callback) {
     });
 }
 
+
 /**
  * 
  * @param {String} type     : id nickname

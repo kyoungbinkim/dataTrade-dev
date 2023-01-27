@@ -91,16 +91,16 @@ const RegisterDataComponent = () => {
                 setReceipt(JSON.stringify(res.data.receipt, null, 2));
                 setLoading(false);
                 setRegister(true);
-                try {
-                    setContractInstance(
-                        res.data.contractAddr
-                    )
-                    const result = await contractInstance().isRegistered(BigNumber.from( hCt));
-                    console.log(result);
-                    // setIsRegisteredFlag(result);
-                } catch (error) {
-                    alert(error);
-                }
+                // try {
+                //     setContractInstance(
+                //         res.data.contractAddr
+                //     )
+                //     const result = await contractInstance().isRegistered(BigNumber.from(hCt));
+                //     console.log(result);
+                //     // setIsRegisteredFlag(result);
+                // } catch (error) {
+                //     alert(error);
+                // }
             }
         )
     }

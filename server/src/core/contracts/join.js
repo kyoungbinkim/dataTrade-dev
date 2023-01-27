@@ -16,9 +16,10 @@ export async function registUser(inputs, EOA, GasPrice) {
         inputs[2]
     ).send({
         from: `${EOA}`,
-        gas: await ContractIns.methods.registUser(inputs[0],inputs[1],inputs[2]).estimateGas(),
+        gas: 110000,
         gasPrice: `${GasPrice}`
     })
+    // await ContractIns.methods.registUser(inputs[0],inputs[1],inputs[2]).estimateGas()
     console.log("registUser : ", receipt);
     return receipt;
 }

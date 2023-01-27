@@ -48,7 +48,7 @@ export default function JoinService() {
 
     const onClickDeduplication = async (e) => {
 
-        const res = await httpCli.get(`/usr/join/check/${nickname}`);
+        const res = await httpCli.get(`/usr/join/check/nickname/${nickname}`);
         if(!res.data){ alert("id already exsist! 😭"); return; }
         else{ alert(` you can use "${nickname}"🎉`); }
         setDeduplication(true);

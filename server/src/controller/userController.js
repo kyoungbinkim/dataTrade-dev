@@ -6,12 +6,20 @@ import { hexToDec } from './../core/contracts/utils.js';
 
 
 
-export const deduplicateCheckController = async (req, res) => {
+export const nicknameDeduplicateCheckController = async (req, res) => {
     console.log(req.params);
     const nickname = req.params.nickname;
     mySqlHandler.nicknameDuplicateCheckQuery(nickname, (err, flag) =>{
         if(err) {return res.status(200).send(flag);}
+        res.status(200).send(flag);
+    })
+}
 
+export const addressDeduplicateChcekController = async (req, res) => {
+    console.log(req.params);
+    const addr = req.params.address;
+    mySqlHandler.duplicateCheckQuery('eoa_addr', addr, (err, flag) => {
+        if(err) {return res.status(200).send(flag);}
         res.status(200).send(flag);
     })
 }

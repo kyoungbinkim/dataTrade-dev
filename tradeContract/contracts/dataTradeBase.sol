@@ -40,7 +40,7 @@ contract DataTradeContract {
         public
         payable
     {   
-        require(!_addr_list[_userInfoMap[msg.sender].addr], "msg.sender already exist");
+        // require(!_addr_list[_userInfoMap[msg.sender].addr], "msg.sender already exist");
         require(!_addr_list[addr], "User already exist");
 
         _addr_list[addr] = true;

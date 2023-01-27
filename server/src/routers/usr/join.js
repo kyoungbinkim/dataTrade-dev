@@ -1,6 +1,7 @@
 import express from 'express';
 import { 
-    deduplicateCheckController,
+    nicknameDeduplicateCheckController,
+    addressDeduplicateChcekController,
     joinController,
 } from '../../controller/userController.js';
 
@@ -11,7 +12,9 @@ router.get('/', (req, res) => {
     res.render('./', { msg });
 });
 
-router.get('/check/:nickname', deduplicateCheckController);
+router.get('/check/nickname/:nickname', nicknameDeduplicateCheckController);
+
+router.get('/check/address/:address', addressDeduplicateChcekController)
 
 router.post('/join', joinController);
   
