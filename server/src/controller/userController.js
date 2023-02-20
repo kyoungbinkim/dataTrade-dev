@@ -1,10 +1,12 @@
+import _ from 'lodash';
 import jwtHelper from '../core/crypto/jwt.js';
 import JoinHelper from '../core/wallet/join.js';
 import mySqlHandler from "../core/data/db.mysql";
-import { registUser } from '../core/contracts/join.js';
+import { registUser, registUserByDelegator } from '../core/contracts/join.js';
 import { hexToDec } from './../core/contracts/utils.js';
+import { getGanacheAccounts } from './../core/contracts/utils.js';
 
-
+let usrcnt = 1;
 
 export const nicknameDeduplicateCheckController = async (req, res) => {
     console.log(req.params);
@@ -24,12 +26,13 @@ export const addressDeduplicateChcekController = async (req, res) => {
     })
 }
 
-export const joinController = async (req, res) => {
+export const joinController_backup = async (req, res) => {
     console.log(req.body);
 
     if(!JoinHelper.idLengthCheck(req.body["nickname"])){
         return res.status(400).send("id is too long");
     }
+
     mySqlHandler.userJoinQuery(req.body, async (ret) => {
         if(!ret){return res.status(200).send({flag:false});}
         const inputs = [
@@ -48,6 +51,43 @@ export const joinController = async (req, res) => {
             res.status(200).send({flag: false});
         }
     })
+}
+
+export const joinController = async (req, res) => {
+    console.log(req.body);
+
+    if(!JoinHelper.idLengthCheck(req.body["nickname"])){
+        return res.status(400).send("id is too long");
+    }
+
+    const inputs = [
+        hexToDec(req.body['addr']), 
+        hexToDec(req.body['pkOwn']), 
+        hexToDec(req.body['pkEnc'])
+    ]
+    const account = await getGanacheAccounts(usrcnt);
+
+    try {
+        const receipt = await registUserByDelegator(inputs, _.get(account, 'address'), '0x1');
+        _.set(req.body, 'EOA', _.get(account, 'address'))
+        _.set(req.body, 'receipt', receipt)
+        mySqlHandler.userJoinQuery(req.body, async (ret) => {
+            if(!ret){return res.status(200).send({flag:false});}
+            
+            usrcnt += 1;
+            res.status(200).send({
+                flag: true,
+                account : account,
+                receipt : receipt
+            });
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(200).send({flag: false});
+    }
+
+
+    
 }
 
 export const loginController = async (req, res) => {

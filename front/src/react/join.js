@@ -64,7 +64,7 @@ export default function JoinService() {
             pkOwn   : _.get(key, 'pkOwn'),
             pkEnc   : _.get(key, 'pkEnc'),
             addr    : _.get(key, 'ena'),
-            EOA     : sessionStorage.getItem('EOA'),
+            // EOA     : sessionStorage.getItem('EOA'),
         }
         httpCli.post("/usr/join/join", joinQuery).then(res =>{
             console.log(res.data);
@@ -98,23 +98,22 @@ export default function JoinService() {
     return (
         <div className='Card'>
             <h3>Join</h3>
-            {!key ? 
+            {
                 <div>
                     <button className='buttonStyle' onClick={onClickSkOwnGen}> 🔑 비밀키 생성기 🔑 </button><br/>
-                </div>:
-                <div className='myCard'>
+                
                     <div className='paragraph'>
                         <h3> 🔐 </h3>
-                        <strong> SK_own : {'0x'+_.get(key, 'skOwn')}</strong><br/>
-                        <strong> PK_own : {'0x'+_.get(key, 'pkOwn')}</strong><br/>
-                        <strong> SK_enc : {'0x'+_.get(key, 'skEnc')}</strong><br/>
-                        <strong> PK_enc : {'0x'+_.get(key, 'pkEnc')}</strong><br/>
-                        <strong> addr  : {' 0x'+_.get(key, 'ena')}</strong><br/><br/>
+                        <strong> SK_own : { !key?'':'0x'+_.get(key, 'skOwn')}</strong><br/>
+                        <strong> PK_own : {!key?'':'0x'+_.get(key, 'pkOwn')}</strong><br/>
+                        <strong> SK_enc : {!key?'':'0x'+_.get(key, 'skEnc')}</strong><br/>
+                        <strong> PK_enc : {!key?'':'0x'+_.get(key, 'pkEnc')}</strong><br/>
+                        <strong> addr  : {!key?'':' 0x'+_.get(key, 'ena')}</strong><br/><br/>
                     </div>
                     
-                    <PrintArr/>
+                    {/* <PrintArr/> */}
                     <div>
-                        <input type='text' className='text' onChange={onChangeEOA} placeholder='write your EOA addr'></input><br/>
+                        {/* <input type='text' className='text' onChange={onChangeEOA} placeholder='write your EOA addr'></input><br/> */}
                         <input type='text' className='text' onChange={onChangeNickname} placeholder='write your nickname'></input>
                         <button className='buttonStyle' onClick={onClickDeduplication}>중복확인</button><br/>
                     </div>
