@@ -1,4 +1,5 @@
 /* global BigInt */
+import crypto from 'crypto';
 import Config from './config.js';
 import CurveParam from '../crypto/curveParam.js';
 
@@ -158,14 +159,14 @@ function abs(a) {
 
 export function randomFieldElement( prime = CurveParam(Config.EC_TYPE).prime ) {
     let bitLength = parseInt(prime.toString(2).length);
-    // let randomHex = crypto.randomBytes(bitLength).toString('hex');
-    let randomBase = BigInt(0);
-    let ten2i = 10;
-    for(let i=1; i<=bitLength; i++){
-        randomBase += BigInt(Math.ceil(Math.random() * ten2i));
-        ten2i = ten2i * 10;
-    }
-    let randomHex = randomBase.toString(16);
+    let randomHex = crypto.randomBytes(bitLength).toString('hex');
+    // let randomBase = BigInt(0);
+    // let ten2i = 10;
+    // for(let i=1; i<=bitLength; i++){
+    //     randomBase += BigInt(Math.ceil(Math.random() * ten2i));
+    //     ten2i = ten2i * 10;
+    // }
+    // let randomHex = randomBase.toString(16);
     const random = BigInt('0x' + randomHex);
     return math.mod(random, prime);
 }

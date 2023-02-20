@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import Web3 from 'web3';
 import fs from 'fs';
 import Config, {
@@ -31,6 +32,10 @@ export async function ganacheDeploy() {
 
     setContractAddr(receipt.contractAddress);
     console.log(receipt, ContractIns.options.address);
+
+    _.set(Config, 'ethAddr' , addr);
+    _.set(Config, 'privKey' , '0x'+privKey);
+
     return receipt;
 }
 

@@ -31,23 +31,46 @@ contract DataTradeContract {
         registData_vk = _registData_vk;
     }
 
+    function registUserByDelegator(
+        uint256 addr,
+        uint256 pk_own, 
+        uint256 pk_enc,
+        address eoa
+    ) 
+        public
+        payable
+    {   
+        _registUser(addr, pk_own, pk_enc, eoa);
+    }
 
     function registUser(
         uint256 addr,
         uint256 pk_own, 
         uint256 pk_enc
-    ) 
+    )
         public
         payable
     {   
-        // require(!_addr_list[_userInfoMap[msg.sender].addr], "msg.sender already exist");
+        _registUser(addr, pk_own, pk_enc, msg.sender);
+    }
+
+    function _registUser(
+        uint256 addr,
+        uint256 pk_own, 
+        uint256 pk_enc,
+        address eoa
+    )
+        public
+        payable
+    {   
+        require(!_addr_list[_userInfoMap[eoa].addr], "msg.sender already exist");
         require(!_addr_list[addr], "User already exist");
 
         _addr_list[addr] = true;
 
-        _userInfoMap[msg.sender].addr = addr;
-        _userInfoMap[msg.sender].pk_enc = pk_enc;
-        _userInfoMap[msg.sender].pk_own = pk_own;
+        _userInfoMap[eoa].addr = addr;
+        _userInfoMap[eoa].pk_enc = pk_enc;
+        _userInfoMap[eoa].pk_own = pk_own;
     }
 
     function isRegisteredUser(

@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "postinstall": "node_modules/.bin/rn-nodeify --install crypto,fs --hack",
     "nodemon": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql && nodemon --experimental-specifier-resolution=node index.js --watch ./src",
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql",
@@ -24,6 +25,10 @@
     "mysql2": "^3.0.1",
     "random-words": "^1.2.0",
     "react-async": "^10.0.1",
+    "react-native-crypto": "^2.2.0",
+    "react-native-level-fs": "^3.0.1",
+    "react-native-randombytes": "^3.6.1",
+    "rn-nodeify": "^10.3.0",
     "web3": "^1.8.1",
     "web3-eth-contract": "^1.8.1"
   },
@@ -31,5 +36,13 @@
     "ignore": [
       "./server/src/core/libsnark/js-libsnark-opt/**"
     ]
+  },
+  "react-native": {
+    "crypto": "react-native-crypto",
+    "fs": "react-native-level-fs"
+  },
+  "browser": {
+    "crypto": "react-native-crypto",
+    "fs": "react-native-level-fs"
   }
 }

@@ -9,7 +9,7 @@ import fs from 'fs';
 import process from 'process';
 import path from 'path';
 import os from 'node:os'
-import Config from '../../../utils/config';
+import Config from '../../../utils/config.js';
 
 let snarkLibPath = ''; 
 const ffi_flags = ffi.DynamicLibrary.FLAGS.RTLD_NOW | ffi.DynamicLibrary.FLAGS.RTLD_GLOBAL;

@@ -1,5 +1,6 @@
 /* global BigInt */
 import Config, {contractsBuildPath, fileStorePath} from "../utils/config.js";
+import { ganacheKeys } from "./deploy.js";
 import Web3 from 'web3';
 import fs from 'fs';
 
@@ -19,6 +20,42 @@ export function setContractAddr(addr){
 export function getContractAddr(){
     return ContractIns.options.address;
 }
+
+export async function getGanacheAccounts(cnt=1){
+    const addr = (await web3Ins.eth.getAccounts())[cnt];
+    const privKey = new Buffer.from(
+        ganacheKeys.addresses[addr.toLocaleLowerCase()].secretKey.data, 'utf-8'
+    ).toString('Hex')
+    return {
+        address : addr,
+        privKey : privKey
+    }
+}
+
+export async function signTx(rawTx, privKey=Config.privKey){
+    try {
+        const signedTx =  await web3Ins.eth.accounts.signTransaction(rawTx, privKey);
+        return signedTx
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+}
+
+export async function sendSignedTransaction(signedTx){
+    try {
+        if(signedTx.rawTransaction === undefined){
+            return;
+        }
+        const receipt = await web3Ins.eth.accounts.sendSignedTransaction(signedTx)
+        return receipt;
+    } catch (error) {
+        console.log(error)
+        return;
+    }
+    
+}
+
 
 export function getAllAddr() {
     return web3Ins.eth.getAccounts();

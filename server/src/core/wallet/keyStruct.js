@@ -6,14 +6,16 @@ import mimc from '../crypto/mimc.js';
 import types from '../utils/types.js';
 
 
-class UserKey {
-    constructor({ena, pkOwn, pkEnc}, sk){
+export default class UserKey {
+    // ena : addr
+    constructor({ena, pkOwn, pkEnc}, skEnc, skOwn){
         this.pk = {
             ena : ena,
             pkOwn : pkOwn,
             pkEnc : pkEnc
         };
-        this.sk = sk;
+        this.skEnc = skEnc;
+        this.skOwn = skOwn;
     }
 
     toJson(){
@@ -21,7 +23,16 @@ class UserKey {
             ena   : this.pk.ena,
             pkOwn : this.pk.pkOwn,
             pkEnc : this.pk.pkEnc,
-            sk    : this.sk
+            skEnc : this.skEnc,
+            skOwn : this.skOwn,
+        }, null, 2);
+    }
+
+    pubKeyToJson(){
+        return JSON.stringify({
+            ena   : this.pk.ena,
+            pkOwn : this.pk.pkOwn,
+            pkEnc : this.pk.pkEnc,
         });
     }
 
@@ -33,34 +44,47 @@ class UserKey {
                 pkOwn   : _.get(userKey, "pkOwn"),
                 pkEnc   : _.get(userKey, "pkEnc")
             },
-            _.get(userKey, "sk")
+            _.get(userKey, "skEnc"),
+            _.get(userKey, "skOwn"),
         );
     }
 
     static keyGen() {
         const mimc7 = new mimc.MiMC7();
 
-        const sk = math.randomFieldElement(constants.SUBGROUP_ORDER);
+        const sk_own = math.randomFieldElement(constants.SUBGROUP_ORDER).toString(16);
+        const pk_own = mimc7.hash(
+            sk_own, types.asciiToHex('pk_own') 
+        )
+        const sk_enc = mimc7.hash(
+            sk_own, types.asciiToHex('sk_enc')
+        )
         const userPublicKey = {
             ena : null,
-            pkOwn : mimc7.hash(sk.toString(16)),
-            pkEnc : Curve.basePointMul(sk).toString(16)
+            pkOwn : pk_own,
+            pkEnc : Curve.basePointMul(types.hexToInt(sk_own)).toString(16)
         };
         // azerothFront code userPublicKey.pkEnc.toString(16)
         userPublicKey.ena =  mimc7.hash(userPublicKey.pkOwn, userPublicKey.pkEnc);
 
-        return new UserKey(userPublicKey, sk.toString(16));
+        return new UserKey(userPublicKey, sk_enc, sk_own);
     }
 
-    static recoverFromUserSk(sk){
+    static recoverFromUserSk(sk_own){
         const mimc7 = new mimc.MiMC7();
 
         // 왜 string -> bigint -> string으로 구현했을까
-        const skBigInt = types.hexToInt(sk);
+        const skBigInt = types.hexToInt(sk_own);
+        const pk_own = mimc7.hash(
+            sk_own, types.asciiToHex('pk_own') 
+        )
+        const sk_enc = mimc7.hash(
+            sk_own, types.asciiToHex('sk_enc')
+        )
 
         const userPublicKey = {
             ena : null,
-            pkOwn : mimc7.hash(skBigInt.toString(16)),
+            pkOwn : mimc7.hash(sk_own),
             pkEnc : Curve.basePointMul(skBigInt).toString(16)
         };
 
@@ -70,7 +94,3 @@ class UserKey {
         return userPublicKey;
     }
 }
-
-export default {
-    UserKey
-};
