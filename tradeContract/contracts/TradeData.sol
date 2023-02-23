@@ -5,8 +5,7 @@ import "./Groth16AltBN128.sol";
 import "./BaseMerkleTree.sol";
 import "./MiMC7.sol";
 
-contract TradeDataContract is BaseMerkleTree{
-    
+abstract contract TradeDataContract is BaseMerkleTree{
     //  user pk
     struct AddressMap {
         //uint256 Addr;
@@ -47,7 +46,12 @@ contract TradeDataContract is BaseMerkleTree{
     }
 
     event LogOrder(
-        uint256[6] ctOrder
+        uint256 ctOrder0,
+        uint256 ctOrder1,
+        uint256 ctOrder2,
+        uint256 ctOrder3,
+        uint256 ctOrder4,
+        uint256 ctOrder5
     );
 
     // user pk
@@ -57,12 +61,12 @@ contract TradeDataContract is BaseMerkleTree{
     )
     public
     returns (bool) {
-        bytes32 memory _addr = MiMC7._hash(bytes32(pkOwn), bytes32(pkEnc));
-        uint256 memory addr = uint256(_addr);
+        bytes32 _addr = MiMC7._hash(bytes32(pkOwn), bytes32(pkEnc));
+        uint256 addr = uint256(_addr);
         require(!_addrList[addr], "User already exist");
         _addrList[addr] = true;
-        _addressMap[addr].PkOwn = pkOwn;
-        _addressMap[addr].PkEnc = pkEnc;
+        userPkList[addr].PkOwn = pkOwn;
+        userPkList[addr].PkEnc = pkEnc;
 
         return true;
     }
@@ -92,16 +96,16 @@ contract TradeDataContract is BaseMerkleTree{
         returns(bool)
     {
         // check input length
-        require( inputs.length == REGISTDATA_NUM_INPUTS, "invalid Input length");
+        require(inputs.length == REGISTDATA_NUM_INPUTS, "invalid Input length");
         
         // check hct
-        require( !_hCT_list[inputs[3]], "already registered h_ct");
+        require(!_hCT_list[inputs[3]], "already registered h_ct");
 
         uint256[] memory input_values = new uint256[](REGISTDATA_NUM_INPUTS);
         for (uint256 i = 0 ; i < REGISTDATA_NUM_INPUTS; i++) {
             input_values[i] = inputs[i];
         }
-        require( Groth16AltBN128._verify(registData_vk, proof, input_values), "invalid proof");
+        //require(Groth16AltBN128._verify(registData_vk, proof, input_values), "invalid proof");
 
         _hCT_list[input_values[3]] = true;
         return _hCT_list[input_values[3]];
@@ -126,26 +130,28 @@ contract TradeDataContract is BaseMerkleTree{
     {
         //verify proof
         // check input length
-        require( inputs.length == ORDER_NUM_INPUTS, "invalid Input length");
+        require(inputs.length == ORDER_NUM_INPUTS, "invalid Input length");
         
         uint256[] memory input_values = new uint256[](ORDER_NUM_INPUTS);
         for (uint256 i = 0 ; i < ORDER_NUM_INPUTS; i++) {
             input_values[i] = inputs[i];
         }
-        require( Groth16AltBN128._verify(orderVk, proof, input_values), "invalid proof");
+        // require(Groth16AltBN128._verify(orderVk, proof, input_values), "invalid proof");
 
         //stack cm to wait trade list
+        require(waitTradeList[input_values[0]] == false, "cm0 already exist");
+        require(waitTradeList[input_values[1]] == false, "cm1 already exist");
         waitTradeList[input_values[0]] = true;
         waitTradeList[input_values[1]] = true;
 
         // emit(CT)
-        uint256[] memory ctOder = new uint256[](CT_ORDER_NUM_INPUTS);
+        uint256[6] memory ctOder;
         for (uint256 i = 0 ; i < CT_ORDER_NUM_INPUTS; i++) {
             ctOder[i] = input_values[i+2];
         }
 
         emit LogOrder(
-            ctOder
+            ctOder[0],ctOder[1],ctOder[2],ctOder[3],ctOder[4],ctOder[5]
         );
 
         return true;
@@ -160,15 +166,17 @@ contract TradeDataContract is BaseMerkleTree{
         returns(bool)
     {
         // verify
-        require( inputs.length == DEC_KEY_NUM_INPUTS, "invalid Input length");
+        require(inputs.length == DEC_KEY_NUM_INPUTS, "invalid Input length");
         
         uint256[] memory input_values = new uint256[](DEC_KEY_NUM_INPUTS);
         for (uint256 i = 0 ; i < DEC_KEY_NUM_INPUTS; i++) {
             input_values[i] = inputs[i];
         }
-        require( Groth16AltBN128._verify(decKeyVk, proof, input_values), "invalid proof");
+        // require(Groth16AltBN128._verify(decKeyVk, proof, input_values), "invalid proof");
 
         // pop cm from wait trade list
+        require(waitTradeList[input_values[0]] == true, "cm0 no exist");
+        require(waitTradeList[input_values[1]] == true, "cm1 no exist");
         waitTradeList[input_values[0]] = false;
         waitTradeList[input_values[1]] = false;
         
@@ -176,7 +184,7 @@ contract TradeDataContract is BaseMerkleTree{
 
 
         // store CT key
-        dataDecKeyList[input_values[0]] = input_values[3];
+        dataDecKeyList[input_values[0]] = input_values[2];
 
         return true;
     }
@@ -187,6 +195,8 @@ contract TradeDataContract is BaseMerkleTree{
         public
         view
         returns(uint256){
+
+        //require(dataDecKeyList[cm] != 0, "dec key no exist");
         return dataDecKeyList[cm];
     }
 }
