@@ -2,6 +2,7 @@
 pragma solidity ^0.8.2;
 
 import "./Groth16AltBN128.sol";
+import "./MiMC7.sol";
 
 contract DataTradeContract {
 
@@ -26,13 +27,14 @@ contract DataTradeContract {
     // registDAta SNARK vk
     uint256[] private registData_vk;
 
+    event uintLog(uint256 addr);
+
     constructor(uint256[] memory _registData_vk)
     {
         registData_vk = _registData_vk;
     }
 
     function registUserByDelegator(
-        uint256 addr,
         uint256 pk_own, 
         uint256 pk_enc,
         address eoa
@@ -40,18 +42,22 @@ contract DataTradeContract {
         public
         payable
     {   
-        _registUser(addr, pk_own, pk_enc, eoa);
+        bytes32 _addr = MiMC7._hash(bytes32(pk_own), bytes32(pk_enc));
+        _registUser(uint256(_addr), pk_own, pk_enc, eoa);
+        
+        emit uintLog(uint256(_addr));
+        emit uintLog(1112233);
     }
 
     function registUser(
-        uint256 addr,
         uint256 pk_own, 
         uint256 pk_enc
     )
         public
         payable
     {   
-        _registUser(addr, pk_own, pk_enc, msg.sender);
+        bytes32 _addr = MiMC7._hash(bytes32(pk_own), bytes32(pk_enc));
+        _registUser(uint256(_addr), pk_own, pk_enc, msg.sender);
     }
 
     function _registUser(

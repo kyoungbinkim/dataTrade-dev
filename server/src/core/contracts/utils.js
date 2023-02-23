@@ -6,9 +6,6 @@ import fs from 'fs';
 
 export const web3Ins               = new Web3();
 web3Ins.setProvider(new Web3.providers.HttpProvider(Config.testProvider));
-// export const registDataContractJson= JSON.parse( fs.readFileSync(contractsBuildPath+'RegistDataContract.json', 'utf-8'));
-// export const registDataContract    = new web3Ins.eth.Contract(registDataContractJson.abi);
-// export let   contractAddr          = null;
 
 export const ContractJson    = JSON.parse(fs.readFileSync(contractsBuildPath+'dataTradeContract.json', 'utf-8'))
 export const ContractIns     = new web3Ins.eth.Contract(ContractJson.abi);
@@ -57,8 +54,8 @@ export async function sendSignedTransaction(signedTx){
 }
 
 
-export function getAllAddr() {
-    return web3Ins.eth.getAccounts();
+export async function getAllAddr() {
+    return ( await web3Ins.eth.getAccounts() );
 }
 
 export function isDeployed() {
@@ -85,9 +82,6 @@ export function getContractProof(hCt, circuitType){
     return proofFlat(proofJson);
 }
 
-export function getPk(hCt ,circuitName='RegistData'){
-
-}
 
 export function getContractFormatVk(circuitName='RegistData'){
     const vkJson = getVk();

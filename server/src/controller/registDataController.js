@@ -13,21 +13,9 @@ import {
     getContractProof,
     getContractAddr,
 } from "../core/contracts/utils.js"
-import {
-    registDataContract,
-    isRegisteredData,
-} from "../core/contracts/registdata.js"
 import { fileStorePath } from '../core/utils/config.js';
+import { getTradeContract } from '../core/contracts/index.js';
 
-
-/***
- * 
- * body {
- *  title,
- *  description
- *
- * }
- */
 
 const libsnarkProver = new LibSnark("RegistData");
 
@@ -70,17 +58,15 @@ export const registDataController = async (req, res) => {
     const contractProof       = getContractProof(snarkInput.gethCt(), `RegistData`);
     
     // send regist data contract
-
     console.log("proof", contractProof);
     console.log("verify input", contractVerifyInput);
-    const receipt = await registDataContract(
+
+    const receipt = await getTradeContract().registData(
         contractProof,
         contractVerifyInput,
-        addr,
-        '0x1'
-    );
+    )
 
-    if(!(await isRegisteredData(contractVerifyInput[3]))){
+    if(!(await getTradeContract().isRegisteredData(contractVerifyInput[3]))){
         return res.send(false);
     }
 

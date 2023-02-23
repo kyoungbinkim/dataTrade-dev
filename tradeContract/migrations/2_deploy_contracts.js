@@ -11,6 +11,7 @@ const Groth16AltBN128Lib = artifacts.require('Groth16AltBN128');
 const Groth16AltBN128Test = artifacts.require('Groth16AltBN128Test');
 const RegistDataContract  = artifacts.require('RegistDataContract');
 const DataTradeBase       = artifacts.require('DataTradeContract');
+const MiMC7               = artifacts.require('MiMC7');
 
 const vkJson = JSON.parse(fs.readFileSync(process.cwd()+'/../test/RegistData_crs_vk.json'));
 
@@ -41,6 +42,7 @@ module.exports = function (deployer) {
   deployer.link(Groth16AltBN128Lib, Groth16AltBN128Test);
   deployer.link(Groth16AltBN128Lib, RegistDataContract);
   deployer.link(Groth16AltBN128Lib, DataTradeBase);
+  deployer.link(MiMC7, DataTradeBase);
   
   deployer.deploy(
     RegistDataContract,

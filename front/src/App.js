@@ -7,7 +7,6 @@ import ClockDisplay from "./test/clockDisplay.js";
 import WalletCard from "./test/WalletCard.js";
 import EncDataTest from './test/encryptionTest.js';
 import UserKey from './test/keyTest.js';
-import GetCTandProof from "./react/getProof.js";
 import RegistDataComponent from "./react/registerData.js";
 import ListPage from './react/getPage.js'
 // import LoginService2 from './react/login_new.js';

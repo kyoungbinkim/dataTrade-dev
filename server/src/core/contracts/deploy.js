@@ -12,55 +12,46 @@ import {
     ContractJson,
     setContractAddr
 } from './utils.js'
+import { initTradeContract } from './index.js';
 
 
 export const ganacheKeys = JSON.parse(fs.readFileSync(ganacheAccountKeyPath, 'utf-8'));
-
-export function compileContract() {
-
-}
 
 export async function ganacheDeploy() {
     const addr = (await web3Ins.eth.getAccounts())[0];
     const privKey = new Buffer.from(
         ganacheKeys.addresses[addr.toLocaleLowerCase()].secretKey.data, 'utf-8'
     ).toString('Hex')
-    console.log('addr : ', addr);
 
     const receipt = await deploy(addr, privKey);
-    ContractIns.options.address = receipt.contractAddress;
 
     setContractAddr(receipt.contractAddress);
-    console.log(receipt, ContractIns.options.address);
-
+    
+    _.set(Config, 'contractAddress', receipt.contractAddress);
     _.set(Config, 'ethAddr' , addr);
     _.set(Config, 'privKey' , '0x'+privKey);
 
+    initTradeContract();
+    
     return receipt;
 }
 
+/**
+ * 
+ * @param {String} fromAddr  :  deployer addr
+ * @param {String} privKey   :  deployer priv Key
+ * @returns 
+ */
 export async function deploy(
     fromAddr,
     privKey,
 ) {
-    // const RegistDataTx = registDataContract.deploy({
-    //     data: registDataContractJson.bytecode,
-    //     arguments: [getContractFormatVk()]
-    // })
 
     const deployTx = ContractIns.deploy({
         data : ContractJson.bytecode,
         arguments : [getContractFormatVk()]
     })
 
-    // const createTransaction = await web3Ins.eth.accounts.signTransaction({
-    //         from: `${fromAddr}`,
-    //         data: RegistDataTx.encodeABI(),
-    //         gas: await RegistDataTx.estimateGas(),
-    //         gasPrice: '0x1'
-    //     },
-    //     `${privKey}`
-    // );
     const createTransaction = await web3Ins.eth.accounts.signTransaction({
         from    : `${fromAddr}`,
         data    : deployTx.encodeABI(),
@@ -69,10 +60,12 @@ export async function deploy(
     },
     `${privKey}`
     );
+
     const createReceipt = await web3Ins.eth.sendSignedTransaction(createTransaction.rawTransaction);
     console.log(`Contract deployed at address: ${createReceipt.contractAddress}`);
     
     // set Contrat Address
     ContractIns.options.address = createReceipt.contractAddress;
+    console.log(createReceipt);
     return createReceipt;
 }

@@ -1,5 +1,4 @@
 import Web3 from 'web3';
-// import Constants from '../constants';
 import types, { addPrefixHex } from '../utils/types'
 import _ from 'lodash';
 

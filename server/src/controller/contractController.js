@@ -5,10 +5,7 @@ import {
     hexToDec,
     getAllAddr
 } from '../core/contracts/utils';
-
-import { 
-    isRegisteredData 
-} from '../core/contracts/registdata';
+import { getTradeContract } from '../core/contracts';
 
 export const getContractAbiController = (req, res) => {
     res.send(ContractJson.abi);
@@ -17,7 +14,7 @@ export const getContractAbiController = (req, res) => {
 export const callIsRegisteredDataController = async (req, res) => {
     const h_ct = req.param.h_ct;
 
-    const flag = await isRegisteredData(h_ct);
+    const flag = await getTradeContract().isRegisteredData(h_ct);
 
     res.send(flag);
 }

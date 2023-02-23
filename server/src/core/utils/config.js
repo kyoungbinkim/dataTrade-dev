@@ -19,7 +19,8 @@ var Config = {
 
     networkId       : '1234',
 
-    testProvider    : 'http://127.0.0.1:7545' // ganache link
+    testProvider    : 'http://127.0.0.1:7545', // ganache link
+    testwsProvider  : 'ws://127.0.0.1:7545',
 }
 
 export const mysqlConfig = {
