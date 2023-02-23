@@ -1,7 +1,5 @@
 import _ from 'lodash';
 import fs from 'fs';
-
-import { registDataInputJsonToContractFormat } from "../core/contracts/registdata.js";
 import { 
     getUserInfo,
     registDataQuery,
@@ -15,7 +13,7 @@ import {
 } from "../core/contracts/utils.js"
 import { fileStorePath } from '../core/utils/config.js';
 import { getTradeContract } from '../core/contracts/index.js';
-
+import { registDataInputJsonToContractFormat } from '../core/contracts/contract.js';
 
 const libsnarkProver = new LibSnark("RegistData");
 

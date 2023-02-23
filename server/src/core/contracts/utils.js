@@ -50,16 +50,10 @@ export async function sendSignedTransaction(signedTx){
         console.log(error)
         return;
     }
-    
 }
-
 
 export async function getAllAddr() {
     return ( await web3Ins.eth.getAccounts() );
-}
-
-export function isDeployed() {
-    return ContractIns.options.address ? true : false;
 }
 
 export function getVk(circuitName='RegistData'){
@@ -151,7 +145,6 @@ const contractUtils = {
     hexToDec,
     proofFlat,
     getContractFormatVk,
-    isDeployed
 };
 
 export default contractUtils;
