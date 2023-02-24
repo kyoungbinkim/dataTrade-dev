@@ -9,6 +9,7 @@ tradeContract/node_modules/
 tradeContract/build/
 tradeContract/package-lock.json
 tradeContract/contracts/artifacts/
+./crs/*.json
 /.pnp
 .pnp.js
 

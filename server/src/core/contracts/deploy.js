@@ -32,7 +32,7 @@ export async function ganacheDeploy() {
     _.set(Config, 'privKey' , '0x'+privKey);
 
     initTradeContract();
-    
+
     return receipt;
 }
 
@@ -49,7 +49,7 @@ export async function deploy(
 
     const deployTx = ContractIns.deploy({
         data : ContractJson.bytecode,
-        arguments : [getContractFormatVk()]
+        arguments : [getContractFormatVk('RegistData'), getContractFormatVk('GenTrade')]
     })
 
     const createTransaction = await web3Ins.eth.accounts.signTransaction({

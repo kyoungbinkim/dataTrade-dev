@@ -8,7 +8,22 @@ import {
 import { getTradeContract } from '../core/contracts';
 
 export const getContractAbiController = (req, res) => {
-    res.send(ContractJson.abi);
+    res.send(getTradeContract().contractAbi);
+}
+
+export const getContractAddressController = (req, res) =>{
+    res.send(getTradeContract().contractAddress)
+}
+
+export const getContractInfoController = (req, res) => {
+    const contractInfo = {
+        abi : getTradeContract().contractAbi,
+        addr: getTradeContract().contractAddress
+    }
+    console.log(contractInfo)
+    res.send(
+        contractInfo
+    )
 }
 
 export const callIsRegisteredDataController = async (req, res) => {
@@ -20,5 +35,5 @@ export const callIsRegisteredDataController = async (req, res) => {
 }
 
 export const getAllAddressController = async (req, res) => {
-    res.send(getAllAddr());
+    res.send(await getTradeContract().getAllAddr());
 }

@@ -1,5 +1,5 @@
 /* global BigInt */
-import Config, {contractsBuildPath, fileStorePath} from "../utils/config.js";
+import Config, {contractsBuildPath, crsPath, fileStorePath} from "../utils/config.js";
 import { ganacheKeys } from "./deploy.js";
 import Web3 from 'web3';
 import fs from 'fs';
@@ -58,7 +58,7 @@ export async function getAllAddr() {
 
 export function getVk(circuitName='RegistData'){
     return JSON.parse(
-        fs.readFileSync(Config.homePath + 'src/core/libsnark/js-libsnark-opt/libsnark/' + circuitName + '_crs_vk.json', 'utf-8')
+        fs.readFileSync(crsPath + circuitName + '_crs_vk.json', 'utf-8')
     );
 }
 
@@ -78,7 +78,7 @@ export function getContractProof(hCt, circuitType){
 
 
 export function getContractFormatVk(circuitName='RegistData'){
-    const vkJson = getVk();
+    const vkJson = getVk(circuitName);
     let tmp = [];
     for (let i = 0; i < 2; i++) {
       tmp.push(hexToDec(vkJson['alpha'][i]))
@@ -99,8 +99,11 @@ export function getContractFormatVk(circuitName='RegistData'){
       tmp.push(hexToDec(vkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
     }
     const vk = tmp;
+    console.log(circuitName, 'vk len : ', vk.length);
     return vk;
 }
+
+
 
 /**
  * 

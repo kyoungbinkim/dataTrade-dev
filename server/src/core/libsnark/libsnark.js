@@ -1,10 +1,9 @@
 import fs from 'fs';
-import Config, {fileStorePath, snarkPath} from "../utils/config.js";
+import Config, {fileStorePath, snarkPath, crsPath} from "../utils/config.js";
 import SnarkInput from "./struct/snarkInput.js";
 import { SnarkLib, SnarkLibUtils } from "./js-libsnark-opt/src/libsnark.interface.js";
 
 export const CircuitType = ["RegistData", "GenTrade", "AcceptTrade"];
-// export const snarkPath = '/Users/kim/dataTrade-dev/server/src/core/libsnark/js-libsnark-opt/libsnark/';
 
 export default class LibSnark {
     constructor(circuitType, verify=false){
@@ -12,9 +11,9 @@ export default class LibSnark {
         this.type = verify ? "prover" : "verifier";
         this.CircuitType = circuitType;
 
-        this.pk_file_path = Buffer.alloc(250); this.pk_file_path.write(snarkPath+this.CircuitType+'_crs_pk.dat');
+        this.pk_file_path = Buffer.alloc(250); this.pk_file_path.write(crsPath+this.CircuitType+'_crs_pk.dat');
         if(verify){
-            this.vk_file_path = Buffer.alloc(250); vk_file_path.write(snarkPath+this.CircuitType+'_crs_vk.dat');
+            this.vk_file_path = Buffer.alloc(250); vk_file_path.write(crsPath+this.CircuitType+'_crs_vk.dat');
         }
         const circuit_type_buf = Buffer.alloc(30); circuit_type_buf.write(this.CircuitType);
 

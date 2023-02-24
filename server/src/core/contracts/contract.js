@@ -12,8 +12,9 @@ export default class contract extends Web3Interface {
     constructor(endPoint, contractAddr){
         super(endPoint);
         this.instance = new this.eth.Contract(ContractJson.abi, contractAddr);
-        this.contractMethod = this.instance.methods;
+        this.contractMethod  = this.instance.methods;
         this.contractAddress = contractAddr;
+        this.contractAbi     = ContractJson.abi;
     }
 
 
@@ -77,8 +78,36 @@ export default class contract extends Web3Interface {
             this.contractMethod.isRegistered(hCt)
         )
     }
-}
 
+    async genTrade(
+        proof,
+        inputs,
+        userEthAddress    = _.get(Config, 'ethAddr'),
+        userEthPrivateKey = _.get(Config, 'privKey'),
+    ) {
+        if (proof.length != 8) {
+            console.log('invalid proof length');
+            return false;
+        }
+        if (inputs.length != 17) {
+            console.log('invalid inputs length');
+            return false;
+        }
+
+        const gas = await this.contractMethod.orderData(proof,inputs).estimateGas();
+
+        return this.sendContractCall(
+            this.contractMethod.orderData(proof,inputs),
+            userEthAddress,
+            userEthPrivateKey,
+            gas
+        )
+    }
+
+    async getAllAddr() {
+        return (await this.eth.getAccounts());
+    }
+}
 
 export function registDataInputJsonToContractFormat(inputJson) {
     let tmp = ['1']
@@ -89,4 +118,11 @@ export function registDataInputJsonToContractFormat(inputJson) {
     const contractInput = tmp;
 
     return contractInput
+}
+
+function hexToDec(hexStr){
+    if(hexStr.slice(0,2) !== '0x'){
+        return BigInt('0x' + hexStr).toString();
+    }
+    return BigInt(hexStr).toString();
 }

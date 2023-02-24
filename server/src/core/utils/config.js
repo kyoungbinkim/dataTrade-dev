@@ -36,15 +36,16 @@ export const mysqlConfig = {
 export let fileStorePath            = Config.homePath + `db/`;
 export let ganacheAccountKeyPath    = Config.homePath + `../tradeContract/keys.json`;
 export let contractsBuildPath       = Config.homePath + `../tradeContract/build/contracts/`
-export let proofStorePath = ``
+export let proofStorePath           = ``
 export let snarkPath                = Config.homePath + 'src/core/libsnark/js-libsnark-opt/libsnark/'
-
+export let crsPath                  = Config.homePath + '../crs/'
 
 export function initConfig(){
     fileStorePath               = Config.homePath + `db/`
     ganacheAccountKeyPath       = Config.homePath + `../tradeContract/keys.json`
     contractsBuildPath          = Config.homePath + `../tradeContract/build/contracts/`
-    snarkPath                   = fileStorePath
+    snarkPath                = fileStorePath
+    crsPath                  = Config.homePath + '../crs/'
 }
 
 

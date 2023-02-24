@@ -24,14 +24,23 @@ contract DataTradeContract {
     // registData SNARK Proof input num
     uint256 private constant REGISTDATA_NUM_INPUTS = 5;
 
+    // GenTrade SNARK Proof input num
+    uint256 private constant ORDER_NUM_INPUTS = 17;
+
     // registDAta SNARK vk
     uint256[] private registData_vk;
 
-    event uintLog(uint256 addr);
+    // GenTrade SNARK vk
+    uint256[] private orderData_vk;
 
-    constructor(uint256[] memory _registData_vk)
-    {
+    event uintLog(string str,  uint256 num);
+
+    constructor(
+        uint256[] memory _registData_vk,
+        uint256[] memory _orderData_vk
+    ){
         registData_vk = _registData_vk;
+        orderData_vk  = _orderData_vk;
     }
 
     function registUserByDelegator(
@@ -44,9 +53,6 @@ contract DataTradeContract {
     {   
         bytes32 _addr = MiMC7._hash(bytes32(pk_own), bytes32(pk_enc));
         _registUser(uint256(_addr), pk_own, pk_enc, eoa);
-        
-        emit uintLog(uint256(_addr));
-        emit uintLog(1112233);
     }
 
     function registUser(
@@ -122,5 +128,36 @@ contract DataTradeContract {
         returns(bool) 
     {
         return _hCT_list[_hct];
+    }
+
+
+    /**
+        1, 
+        c0, c1  : 
+        cm_own 
+        cm_del 
+        ENA_r, ENA_c 
+        ENA'_r, ENA'_c 
+        fee_del, fee_own 
+        CT : (size : 6)
+     */
+    function orderData(
+        uint256[] memory proof,
+        uint256[ORDER_NUM_INPUTS] memory inputs
+    )
+        public
+        payable
+        returns(bool)
+    {
+
+        require( inputs.length == ORDER_NUM_INPUTS, "invalid Input length");
+
+        uint256[] memory input_values = new uint256[](ORDER_NUM_INPUTS);
+        for (uint256 i = 0 ; i < ORDER_NUM_INPUTS; i++) {
+            input_values[i] = inputs[i];
+        }
+        require( Groth16AltBN128._verify(orderData_vk, proof, input_values), "invalid proof");
+        
+        return true;
     }
 }

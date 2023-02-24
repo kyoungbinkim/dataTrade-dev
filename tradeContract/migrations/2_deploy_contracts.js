@@ -8,50 +8,59 @@ function hexToDex(hexStr){
 }
 
 const Groth16AltBN128Lib = artifacts.require('Groth16AltBN128');
-const Groth16AltBN128Test = artifacts.require('Groth16AltBN128Test');
-const RegistDataContract  = artifacts.require('RegistDataContract');
 const DataTradeBase       = artifacts.require('DataTradeContract');
 const MiMC7               = artifacts.require('MiMC7');
 
+const crsPath= process.cwd()+'/../../crs/'
+
+const RegistDataVkJson = JSON.parse(fs.readFileSync(crsPath+'RegistData_crs_vk.json'));
+const GenTradeVkJson   = JSON.parse(fs.readFileSync(crsPath+'GenTrade_crs_vk.json'));
+
 const vkJson = JSON.parse(fs.readFileSync(process.cwd()+'/../test/RegistData_crs_vk.json'));
 
-let tmp = [];
+let vk_RegistData = [];
+let vk_GenTrade   = []
 for (let i = 0; i < 2; i++) {
-  tmp.push(hexToDex(vkJson['alpha'][i]))
+    vk_RegistData.push(hexToDex(RegistDataVkJson['alpha'][i]))
+    vk_GenTrade.push(hexToDex(GenTradeVkJson['alpha'][i]))    
 }
 
 // reversed
 for (let i = 0; i < 4; i++) {
-  tmp.push(hexToDex(vkJson['beta'][Number.parseInt(i / 2)][(i+1) % 2]))
+    vk_RegistData.push(hexToDex(RegistDataVkJson['beta'][Number.parseInt(i / 2)][(i+1) % 2]))
+    vk_GenTrade.push(hexToDex(GenTradeVkJson['beta'][Number.parseInt(i / 2)][(i+1) % 2]))
 }
 
 // reversed
 for (let i = 0; i < 4; i++) {
-  tmp.push(hexToDex(vkJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
+    vk_RegistData.push(hexToDex(RegistDataVkJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
+    vk_GenTrade.push(hexToDex(GenTradeVkJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
+
 }
 
 // console.log("ABC len : ", vkJson['ABC'].length)
-for (let i = 0; i < vkJson['ABC'].length*2; i++) {
-  tmp.push(hexToDex(vkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
+for (let i = 0; i < RegistDataVkJson['ABC'].length*2; i++) {
+    vk_RegistData.push(hexToDex(RegistDataVkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
 }
-const vk = tmp;
-console.log(vk, vk.length);
+
+for (let i=0; i< GenTradeVkJson['ABC'].length*2; i++ ){
+    vk_GenTrade.push(hexToDex(GenTradeVkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
+
+}
+
+console.log('vk_GenTrade : ', vk_GenTrade)
+console.log('vk_RegistData : ', vk_RegistData)
 
 module.exports = function (deployer) {
   deployer.deploy(Groth16AltBN128Lib);
-  deployer.link(Groth16AltBN128Lib, Groth16AltBN128Test);
-  deployer.link(Groth16AltBN128Lib, RegistDataContract);
+  deployer.deploy(MiMC7);
   deployer.link(Groth16AltBN128Lib, DataTradeBase);
   deployer.link(MiMC7, DataTradeBase);
-  
-  deployer.deploy(
-    RegistDataContract,
-    vk
-  );
 
   deployer.deploy(
     DataTradeBase, 
-    vk
+    vk_RegistData,
+    vk_RegistData
   );
 };
 
