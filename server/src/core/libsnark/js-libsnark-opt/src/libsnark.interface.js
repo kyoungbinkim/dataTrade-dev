@@ -13,12 +13,8 @@ import Config from '../../../utils/config.js';
 
 let snarkLibPath = ''; 
 const ffi_flags = ffi.DynamicLibrary.FLAGS.RTLD_NOW | ffi.DynamicLibrary.FLAGS.RTLD_GLOBAL;
-if (process.env.NODE_ENV !== 'production') {
-    snarkLibPath = Config.homePath+'/src/core/libsnark/js-libsnark-opt/libsnark/libSnark.dylib';
-} else {
-    snarkLibPath = '../libsnark-optimization/lib/'+os.platform()+'_release/lib/libSnark.dylib';
-}
-console.log("snarkLibPath : ", snarkLibPath, os.arch(), os.platform());
+snarkLibPath = Config.homePath+'/src/core/libsnark/js-libsnark-opt/libsnark/libSnark.dylib';
+
 
 // const cINT      = "int";
 // const cCHARptr  = ref.refType(ref.types.char);

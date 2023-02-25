@@ -1,15 +1,15 @@
 import express from 'express';
-import register from './register_data';
 import { 
     getDataController, 
     getAlldataController,
     getMyDataController, 
 } from '../../controller/dataController';
+import { registDataController } from '../../controller/registDataController';
 
 const dataRouter = express.Router();
 
 // dataRouter.use('/data',data);
-dataRouter.use('/register', register);
+dataRouter.use('/register', registDataController);
 
 dataRouter.get('/page/:ind', getDataController);
 
