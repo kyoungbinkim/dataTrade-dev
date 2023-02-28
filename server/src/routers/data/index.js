@@ -9,7 +9,7 @@ import { registDataController } from '../../controller/registDataController';
 const dataRouter = express.Router();
 
 // dataRouter.use('/data',data);
-dataRouter.use('/register', registDataController);
+dataRouter.post('/register', registDataController);
 
 dataRouter.get('/page/:ind', getDataController);
 
