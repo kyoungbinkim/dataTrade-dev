@@ -71,7 +71,7 @@ contract TradeDataContract is BaseMerkleTree{
         bytes32 right)
     internal
     override
-    virtual
+    pure
     returns (bytes32){
         return MiMC7._hash(bytes32(left), bytes32(right));
     }
@@ -117,7 +117,6 @@ contract TradeDataContract is BaseMerkleTree{
         uint256[REGISTDATA_NUM_INPUTS] memory inputs
     )
         public
-        payable
         returns(bool)
     {
         // check input length
@@ -150,7 +149,6 @@ contract TradeDataContract is BaseMerkleTree{
         uint256[ORDER_NUM_INPUTS] memory inputs
     )
         public
-        payable
         returns(bool)
     {
         //verify proof
@@ -188,7 +186,6 @@ contract TradeDataContract is BaseMerkleTree{
         uint256[DEC_KEY_NUM_INPUTS] memory inputs
     )
         public
-        payable
         returns(bool)
     {
         // verify
