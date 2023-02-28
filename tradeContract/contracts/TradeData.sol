@@ -188,6 +188,11 @@ contract TradeDataContract is BaseMerkleTree{
         public
         returns(bool)
     {
+        // Check the root and the nullifiers.
+        // require(
+        //     _roots[rt],
+        //     "Invalid root : This root is not valid root"
+        // );
         // verify
         require(inputs.length == DEC_KEY_NUM_INPUTS, "invalid Input length");
         
@@ -225,6 +230,21 @@ contract TradeDataContract is BaseMerkleTree{
 
         //require(dataDecKeyList[cm] != 0, "dec key no exist");
         return dataDecKeyList[cm];
+    }
+
+    function getRootTop() public view returns (uint256) {
+        return _root_top;
+    }
+
+    function getMerklePath(uint256 index) public view returns (uint256[] memory) {
+        bytes32[] memory merkle_path_bytes = _computeMerklePath(index);
+        uint256[] memory merkle_path = new uint256[](_DEPTH);
+
+        for(uint256 i = 0; i < merkle_path_bytes.length ;i++){
+            merkle_path[i] = uint256(merkle_path_bytes[i]);
+        }
+
+        return merkle_path;
     }
 
     function _addRoot(uint256 rt) private {
