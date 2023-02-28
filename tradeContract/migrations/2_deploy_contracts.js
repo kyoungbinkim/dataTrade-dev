@@ -56,7 +56,6 @@ const Groth16AltBN128Lib = artifacts.require('Groth16AltBN128');
 const TradeDataContract = artifacts.require('TradeDataContract');
 const MiMC7 = artifacts.require('MiMC7');
 
-
 const vkJson = JSON.parse(fs.readFileSync('../test/RegistData_crs_vk.json'));
 
 let tmp = [];
@@ -82,7 +81,11 @@ const vk1 = tmp;
 const vk2 = tmp;
 const vk3 = tmp;
 
+const merkleDepth = 8;
+const merkleHash_type = 1; //mimc
+
 module.exports = function (deployer) {
+  //
   deployer.deploy(Groth16AltBN128Lib);
   deployer.link(Groth16AltBN128Lib, TradeDataContract);
   deployer.deploy(MiMC7);
@@ -91,7 +94,9 @@ module.exports = function (deployer) {
     TradeDataContract,
     vk1,
     vk2,
-    vk3
+    vk3,
+    merkleDepth,
+    merkleHash_type
   );
 };
 

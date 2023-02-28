@@ -5,7 +5,7 @@ import "./Groth16AltBN128.sol";
 import "./BaseMerkleTree.sol";
 import "./MiMC7.sol";
 
-abstract contract TradeDataContract is BaseMerkleTree{
+contract TradeDataContract is BaseMerkleTree{
     //  user pk
     struct AddressMap {
         //uint256 Addr;
@@ -19,13 +19,15 @@ abstract contract TradeDataContract is BaseMerkleTree{
     mapping(uint256 => bool) private _addrList;
     mapping(uint256 => AddressMap) private userPkList;
     mapping(uint256 => uint256) private dataDecKeyList;
+    mapping(uint256 => bool) private _roots;
     
+    // The Most recent root of the Merkle tree
+    uint256 private _root_top;
+
     //  SNARK Proof input num
     uint256 private constant REGISTDATA_NUM_INPUTS = 5;
     uint256 private constant ORDER_NUM_INPUTS = 8;
     uint256 private constant DEC_KEY_NUM_INPUTS = 3;
-
-    //
     uint256 private constant CT_ORDER_NUM_INPUTS = 6;
 
     //  SNARK vk
@@ -34,17 +36,27 @@ abstract contract TradeDataContract is BaseMerkleTree{
     uint256[] private decKeyVk;
 
 
+    // constructor
     constructor(
         uint256[] memory _registData_vk,
         uint256[] memory _orderVk,
-        uint256[] memory _decKeyVk
+        uint256[] memory _decKeyVk,
+        uint256 merkleDepth,
+        uint256 merkleHash_type
         )
+        BaseMerkleTree(merkleDepth, merkleHash_type)
     {
+        uint256 initial_root = uint256(_nodes[0]);
+        _roots[initial_root] = true;
+        _root_top = initial_root;
+
+        // register verify key
         registData_vk = _registData_vk;
         orderVk = _orderVk;
         decKeyVk = _decKeyVk;
     }
 
+    // event log
     event LogOrder(
         uint256 ctOrder0,
         uint256 ctOrder1,
@@ -54,16 +66,29 @@ abstract contract TradeDataContract is BaseMerkleTree{
         uint256 ctOrder5
     );
 
-    // user pk
+    function  _hash(
+        bytes32 left,
+        bytes32 right)
+    internal
+    override
+    virtual
+    returns (bytes32){
+        return MiMC7._hash(bytes32(left), bytes32(right));
+    }
+
+    // register pk and user
     function registerUser(
         uint256 pkOwn,
         uint256 pkEnc
     )
     public
     returns (bool) {
+        // compute user addr and Pk hash
         bytes32 _addr = MiMC7._hash(bytes32(pkOwn), bytes32(pkEnc));
         uint256 addr = uint256(_addr);
         require(!_addrList[addr], "User already exist");
+
+        // register user info
         _addrList[addr] = true;
         userPkList[addr].PkOwn = pkOwn;
         userPkList[addr].PkEnc = pkEnc;
@@ -119,7 +144,7 @@ abstract contract TradeDataContract is BaseMerkleTree{
         return _hCT_list[_hct];
     }
 
-    //trade data
+    //order data
     function orderData(
         uint256[] memory proof,
         uint256[ORDER_NUM_INPUTS] memory inputs
@@ -144,7 +169,7 @@ abstract contract TradeDataContract is BaseMerkleTree{
         waitTradeList[input_values[0]] = true;
         waitTradeList[input_values[1]] = true;
 
-        // emit(CT)
+        // emit(CT_order)
         uint256[6] memory ctOder;
         for (uint256 i = 0 ; i < CT_ORDER_NUM_INPUTS; i++) {
             ctOder[i] = input_values[i+2];
@@ -157,6 +182,7 @@ abstract contract TradeDataContract is BaseMerkleTree{
         return true;
     }
     
+    // register dec key
     function registerDecKey(
         uint256[] memory proof,
         uint256[DEC_KEY_NUM_INPUTS] memory inputs
@@ -181,7 +207,11 @@ abstract contract TradeDataContract is BaseMerkleTree{
         waitTradeList[input_values[1]] = false;
         
         // TradeACC += cm,cm
-
+        _insert(bytes32(input_values[0]));
+        _insert(bytes32(input_values[1]));
+        
+        uint256 new_merkle_root = uint256(_recomputeRoot(2));//parameter is count of inserted cm
+        _addRoot(new_merkle_root);
 
         // store CT key
         dataDecKeyList[input_values[0]] = input_values[2];
@@ -198,5 +228,10 @@ abstract contract TradeDataContract is BaseMerkleTree{
 
         //require(dataDecKeyList[cm] != 0, "dec key no exist");
         return dataDecKeyList[cm];
+    }
+
+    function _addRoot(uint256 rt) private {
+        _roots[rt] = true;
+        _root_top = rt;
     }
 }
