@@ -93,4 +93,9 @@ export default class UserKey {
 
         return userPublicKey;
     }
+
+    getLoginTk() {
+        const mimc7 = new mimc.MiMC7();
+        return mimc7.hash(this.pk.pkOwn, types.asciiToHex('login'));
+    }
 }

@@ -3,9 +3,13 @@ import server from './src/server';
 import process from 'process';
 import { ganacheDeploy } from './src/core/contracts/deploy';
 import Config, { initConfig } from './src/core/utils/config';
+import subscribeGenTrade from './src/core/contracts/subscribe';
 
 Config.homePath = process.cwd() + '/';
 
 initConfig();
 await ganacheDeploy(); // deploy smart contracts to ganache 
+
+subscribeGenTrade(); // subscribe GenTrade contract event
+
 server();

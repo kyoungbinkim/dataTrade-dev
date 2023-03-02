@@ -21,6 +21,15 @@ var Config = {
 
     testProvider    : 'http://127.0.0.1:7545', // ganache link
     testwsProvider  : 'ws://127.0.0.1:7545',
+
+    keys            : {
+        sk_enc          : undefined,
+        pk_enc          : undefined,
+        sk_own          : undefined,
+        pk_own          : undefined,
+        addr            : undefined
+    }
+    
 }
 
 export const mysqlConfig = {

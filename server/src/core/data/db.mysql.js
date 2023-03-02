@@ -97,9 +97,9 @@ export function userJoinQuery(userInfoJsonInput, callback){
 
     const loginTk  = userInfoJson['loginTk'] ?? userInfoJson['login_tk'] ??userInfoJson['login_token'] 
     const nickname = userInfoJson['nickname'] ?? randomWord()+randomWord();
-    const skEnc    = userInfoJson['skEnc'];
-    const pkOwn    = userInfoJson['pkOwn'];
-    const pkEnc    = userInfoJson['pkEnc'];
+    const skEnc    = userInfoJson['skEnc'] ?? _.get(userInfoJson, 'sk_enc');
+    const pkOwn    = userInfoJson['pkOwn'] ?? _.get(userInfoJson, 'pk_own');
+    const pkEnc    = userInfoJson['pkEnc'] ?? _.get(userInfoJson, 'pk_enc');
     const addr     = userInfoJson['addr'] ?? userInfoJson['ena'];
     const EOA      = userInfoJson['EOA'];
     const userInsertUserQuery = 

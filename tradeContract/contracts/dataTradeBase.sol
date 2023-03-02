@@ -21,6 +21,9 @@ contract DataTradeContract {
     // EOA -> user keys
     mapping(address => userInfo) _userInfoMap;
 
+    // to check trade
+    mapping(uint256 => bool) waitTradeList;
+
     // registData SNARK Proof input num
     uint256 private constant REGISTDATA_NUM_INPUTS = 5;
 
@@ -33,7 +36,12 @@ contract DataTradeContract {
     // GenTrade SNARK vk
     uint256[] private orderData_vk;
 
-    event uintLog(string str,  uint256 num);
+    event logOrder(
+        address sender,
+        uint256 c0,
+        uint256 c1,
+        uint256[] c2
+    );
 
     constructor(
         uint256[] memory _registData_vk,
@@ -152,12 +160,31 @@ contract DataTradeContract {
 
         require( inputs.length == ORDER_NUM_INPUTS, "invalid Input length");
 
+        require( !waitTradeList[inputs[3]], "already exist cm_own");
+        require( !waitTradeList[inputs[4]], "already exist cm_del");
+
         uint256[] memory input_values = new uint256[](ORDER_NUM_INPUTS);
         for (uint256 i = 0 ; i < ORDER_NUM_INPUTS; i++) {
             input_values[i] = inputs[i];
         }
         require( Groth16AltBN128._verify(orderData_vk, proof, input_values), "invalid proof");
         
+        // insert cm to waitTradeList
+        waitTradeList[inputs[3]] = true;
+        waitTradeList[inputs[4]] = true;
+
+        // emit log
+        uint256[] memory c2 = new uint256[](6);
+        for (uint256 i=0; i<6; i++){
+            c2[i] = input_values[i+11];
+        } 
+        emit logOrder(
+            msg.sender,
+            input_values[1],
+            input_values[2],
+            c2
+        );
+
         return true;
     }
 }

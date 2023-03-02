@@ -219,22 +219,21 @@ class publicKeyEncryption {
      * 
      * @param {pCT}         pct         The cihpertext of public key encryption 
      * @param {string}      privKey     The user's private key or auditor's private key | hexadecimal string
-     * @param {boolean}     audit       Whether or not to audit, 'true' is used by the auditor, and 'false' is used by the user.
      * @returns 
      */
-    Dec(pct, privKey, audit ) {
+    Dec( pct, privKey ) {
         let mimc7 = new mimc.MiMC7();
         let denom = curve.multscalar(
             types.hexToInt(pct.c0),
             types.hexToInt(privKey)
         );
         denom = math.modInv(denom, this.prime);
-        let encKey = audit === true ? types.hexToInt(pct.c2) : types.hexToInt(pct.c1); 
+        let encKey =  types.hexToInt(pct.c1); 
         
         let key = math.mod((encKey * denom), this.prime);
         return (() => {
             let ret = [];
-            for(const [i, e] of pct.c3.entries()){
+            for(const [i, e] of pct.c2.entries()){
                 let hashInput = (key + BigInt(i.toString(10))).toString(16);
                 let hashed = types.hexToInt((mimc7.hash(hashInput)));
                 ret.push(

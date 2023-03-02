@@ -26,7 +26,7 @@ export default class contract extends Web3Interface {
         userEthPrivateKey = _.get(Config, 'privKey'),
     ) {
         const gas = await this.contractMethod.registUserByDelegator(
-            pk_own, pk_enc,eoa
+            pk_own, pk_enc, eoa
         ).estimateGas();
 
         return this.sendContractCall(

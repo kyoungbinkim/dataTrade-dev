@@ -4,11 +4,15 @@
   "description": "dataTrade-dev solc Contracts",
   "main": "truffle-config.js",
   "scripts": {
-    "testrpc": "truffle compile && node ./node_modules/ganache-cli/cli.js --hardfork istanbul --port 7545 --gasLimit 0x3FFFFFFFFFFFF --gasPrice 1 --defaultBalanceEther 100000000000 --networkId 1234 --account_keys_path keys.json",
+    "testrpc": "node ./node_modules/ganache-cli/cli.js --hardfork istanbul --port 7545 --gasLimit 0x3FFFFFFFFFFFF --gasPrice 1 --defaultBalanceEther 100000000000 --networkId 1234 --account_keys_path keys.json",
     "ganache": "node ./node_modules/ganache-cli/cli.js --hardfork istanbul --port 7545 --defaultBalanceEther 100000000000 --networkId 1234",
     "compile": "truffle compile",
     "deploy": "truffle deploy",
-    "test": "truffle test"
+    "test": "truffle test",
+    "copy" : "node ./src/utils/utils.js 0",
+    "copyAbi": "node ./src/utils/utils.js 1",
+    "copyKey": "node ./src/utils/utils.js 2",
+    "start" : "truffle compile && npm run copy && npm run testrpc "
   },
   "keywords": [],
   "author": "",
@@ -17,6 +21,7 @@
     "add": "^2.0.6",
     "ethereumjs-abi": "^0.6.8",
     "ganache-cli": "^6.12.2",
+    "lodash": "^4.17.21",
     "openzeppelin-solidity": "^4.0.0",
     "shell-escape": "^0.2.0",
     "solc": "^0.8.2",
