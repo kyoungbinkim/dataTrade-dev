@@ -8,6 +8,7 @@ import subscribeGenTrade from './src/core/contracts/subscribe';
 Config.homePath = process.cwd() + '/';
 
 initConfig();
+
 await ganacheDeploy(); // deploy smart contracts to ganache 
 
 subscribeGenTrade(); // subscribe GenTrade contract event

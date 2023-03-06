@@ -1,4 +1,4 @@
-import DBinterface from "../db.interface";
+import DBinterface from "../db.interface.js";
 
 export default class userDB extends DBinterface {
     constructor(){
@@ -91,6 +91,15 @@ export default class userDB extends DBinterface {
                     'value' : login_tk
                 }
             )
+            if (ret.length == 0) {
+                return {flag : false}
+            }
+            return {
+                flag : true,
+                nickname : ret[0].nickname,
+                login_tk : ret[0].login_tk,
+                sk_enc   : ret[0].sk_enc
+            }
         } catch (error) {
             console.log(error)
             return {flag : false}

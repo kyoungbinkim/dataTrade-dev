@@ -2,7 +2,7 @@ import _ from 'lodash';
 import mimc from '../core/crypto/mimc.js';
 import jwtHelper from '../core/crypto/jwt.js';
 import JoinHelper from '../core/wallet/join.js';
-import mySqlHandler from "../core/data/db.mysql";
+import mySqlHandler, {getUserKeysFromNickname} from "../core/data/db.mysql";
 // import { registUser, registUserByDelegator } from '../core/contracts/join.js';
 import { hexToDec } from './../core/contracts/utils.js';
 import { getGanacheAccounts } from './../core/contracts/utils.js';
@@ -90,9 +90,21 @@ export const loginController = async (req, res) => {
 }
 
 export const serverKeyController = async (req, res) => {
-
+    console.log('server key query : ', _.get(Config.keys, 'pk_enc'))
     res.send({
         'pk_enc' : _.get(Config.keys, 'pk_enc'),
         'pk_own' : _.get(Config.keys, 'pk_own')
     })
+}
+
+export const userKeyController = async (req, res) => {
+    const nickname = req.params.nickname
+    const info = await getUserKeysFromNickname(nickname);
+    
+    console.log(typeof info, info)
+
+    if(typeof info !== 'object'){
+        return res.send(false);
+    }
+    return res.send(info);
 }

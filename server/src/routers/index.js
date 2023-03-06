@@ -8,7 +8,9 @@ const rootRouter = express.Router();
 
 //use : 서버가 켜질때 동작되는 middleWare 
 rootRouter.use('/usr', usr);
+
 rootRouter.use('/data',authMiddleWare, data);
+
 rootRouter.use('/contract', contract);
 
 export default rootRouter;

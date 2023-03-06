@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import mysqlPromise from 'mysql2/promise';
 
-import { mysqlConfig } from '../utils/config';
+import { mysqlConfig } from '../utils/config.js';
 
 
 const connection = await mysqlPromise.createConnection(mysqlConfig);

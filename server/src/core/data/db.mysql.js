@@ -215,7 +215,7 @@ export async function getDataList(ind, callback) {
 
 export async function getAllDataList (callback){
     const getDataQuery = 
-    `SELECT title, descript, owner_nickname from data;`
+    `SELECT title, descript, owner_nickname, h_ct from data;`
 
     const [data] = await promiseConnection.execute(getDataQuery)
     console.log(data);
@@ -252,8 +252,19 @@ export async function getUserInfo(lgTk) {
         console.log(error);
         return undefined;
     }
-    
 }
+
+export async function getUserKeysFromNickname(nickname) {
+    try {
+        const getUserKeyQuery = `SELECT nickname, pk_enc, pk_own from user where nickname=?`
+        const [rows] = await promiseConnection.execute(getUserKeyQuery, [`${nickname}`])
+        return rows[0]
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+}
+
 
 const mySqlHandler = {
     nicknameDuplicateCheckQuery,

@@ -13,8 +13,8 @@ import { userJoinQuery } from './core/data/db.mysql';
 import { getTradeContract } from './core/contracts';
 
 // 서버 함수 비동기로 설정
-const server = async () => {
-    initServerAccount();
+const server = async (initDB=false) => {
+    initServerAccount(initDB);
     const app = express();
     const port = 10801;
     const __dirname = path.resolve();
@@ -54,7 +54,7 @@ export const clearDB = () => {
     })
 }
 
-export const initServerAccount = async () => {
+export const initServerAccount = async (initDBflag=false) => {
     const serverKey = UserKey.keyGen();
 
     _.set(Config.keys, 'pk_enc', serverKey.pk.pkEnc);
@@ -62,33 +62,34 @@ export const initServerAccount = async () => {
     _.set(Config.keys, 'pk_own', serverKey.pk.pkOwn);
     _.set(Config.keys, 'sk_own', serverKey.skOwn);
     _.set(Config.keys, 'addr', serverKey.pk.ena);
-    console.log(Config.keys);
 
-    try {
-        
-        await clearDB()
+    if (initDBflag){
+        try {
+            
+            await clearDB()
 
-        const receipt = await getTradeContract().registUser(
-            hexToDec(_.get(Config.keys, 'pk_own')),
-            hexToDec(_.get(Config.keys, 'pk_enc')),
-            (_.get(Config, 'ethAddr')),
-        )
-        console.log(receipt);
+            const receipt = await getTradeContract().registUser(
+                hexToDec(_.get(Config.keys, 'pk_own')),
+                hexToDec(_.get(Config.keys, 'pk_enc')),
+                (_.get(Config, 'ethAddr')),
+            )
+            console.log(receipt);
 
-        userJoinQuery(
-            _.merge(Config.keys, 
-                {
-                    'nickname'  : 'server',
-                    'loginTk'   : serverKey.getLoginTk(),
-                    'EOA'       : _.get(Config, 'ethAddr')
-                }),
-                (flag) => {
-                    if (!flag) {process.exit();}
-                }
-        )
-    } catch (error) {
-        console.log(error);
-        process.exit();
+            userJoinQuery(
+                _.merge(Config.keys, 
+                    {
+                        'nickname'  : 'server',
+                        'loginTk'   : serverKey.getLoginTk(),
+                        'EOA'       : _.get(Config, 'ethAddr')
+                    }),
+                    (flag) => {
+                        if (!flag) {process.exit();}
+                    }
+            )
+        } catch (error) {
+            console.log(error);
+            process.exit();
+        }
     }
 }   
 

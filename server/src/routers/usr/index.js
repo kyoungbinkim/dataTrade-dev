@@ -3,6 +3,8 @@ import login from './login.js';
 import join from './join.js';
 import server from './server.js';
 
+// usr/
+
 const usrRouter = express.Router();
 
 usrRouter.use('/login',login);

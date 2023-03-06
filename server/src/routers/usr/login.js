@@ -3,6 +3,7 @@ import {
   loginController 
 } from '../../controller/userController.js';
 
+// usr/login
 const router = express.Router();
 
 router.get('/', (req, res) => {
