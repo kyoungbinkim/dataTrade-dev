@@ -6,6 +6,11 @@ import "./MiMC7.sol";
 
 contract DataTradeContract {
 
+    struct ENA {
+        uint256 r;
+        uint256 ct;
+    }
+
     struct userInfo {
         uint256 addr;
         uint256 pk_enc;
@@ -24,17 +29,23 @@ contract DataTradeContract {
     // to check trade
     mapping(uint256 => bool) waitTradeList;
 
-    // registData SNARK Proof input num
+    // registData SNARK Proof verify input num
     uint256 private constant REGISTDATA_NUM_INPUTS = 5;
 
-    // GenTrade SNARK Proof input num
+    // GenTrade SNARK Proof verify input num
     uint256 private constant ORDER_NUM_INPUTS = 17;
+
+    // AcceptTrade SNARK Proof verify input num
+    uint256 private constant ACCEPT_NUM_INPUTS = 6;
 
     // registDAta SNARK vk
     uint256[] private registData_vk;
 
     // GenTrade SNARK vk
     uint256[] private orderData_vk;
+
+    // Accept Trade vk
+    uint256[] private acceptOrder_vk;
 
     event logOrder(
         address sender,
@@ -46,9 +57,11 @@ contract DataTradeContract {
     constructor(
         uint256[] memory _registData_vk,
         uint256[] memory _orderData_vk
+        // uint256[] memory _acceptOrder_vk
     ){
         registData_vk = _registData_vk;
         orderData_vk  = _orderData_vk;
+        // acceptOrder_vk = _acceptOrder_vk;
     }
 
     function registUserByDelegator(
@@ -141,7 +154,7 @@ contract DataTradeContract {
 
     /**
         1, 
-        c0, c1  : 
+        c0, c1   
         cm_own 
         cm_del 
         ENA_r, ENA_c 
@@ -187,4 +200,24 @@ contract DataTradeContract {
 
         return true;
     }
+
+
+    // function acceptOrderKey(
+    //     uint256[] memory proof,
+    //     uint256[ACCEPT_NUM_INPUTS] memory inputs
+    // )
+    //     public
+    //     payable
+    //     returns(bool)
+    // {
+    //     require(inputs.length == ACCEPT_NUM_INPUTS, "invalid Inputs length");
+
+    //     uint256[] memory input_values = new uint256[](ACCEPT_NUM_INPUTS);
+    //     for (uint256 i = 0 ; i < ACCEPT_NUM_INPUTS; i++) {
+    //         input_values[i] = inputs[i];
+    //     }
+    //     require( Groth16AltBN128._verify(acceptOrder_vk, proof, input_values), "invalid proof");
+
+    //     return true;
+    // }
 }
