@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "start": "npm run nodemon",
     "postinstall": "node_modules/.bin/rn-nodeify --install crypto,fs --hack",
     "nodemon": "rm -f ./db/*.json && mysql -u root -p --database=trade_db < ./src/core/data/trade_db.sql && nodemon --experimental-specifier-resolution=node index.js --watch ./src",
     "test": "echo \"Error: no test specified\" && exit 1",

@@ -23,8 +23,8 @@ const subscribeGenTrade = () => {
                 console.log("subscribe : ", log)
                 let data = _.get(log, 'data');
                 if (data.slice(0,2) === '0x') { data = data.slice(2)}
-                console.log(data.length) 
 
+                console.log(data.length) 
                 for (let i=0; i<11; i++) {
                     console.log(i, data.slice(i*64, (i+1)*64), data.slice(i*64, (i+1)*64).length)
                 }
