@@ -76,16 +76,24 @@ export const loginController = async (req, res) => {
           flag      : false,
           token     : undefined,
           loginTk   : undefined,
+          nickname  : undefined
         };
-        if(login.flag){
-          response.flag     = true; 
-          response.loginTk  = login.login_tk;
-          response.token    = jwtHelper.sign({
-            nickname : login.nickname,
-            loginTk  : login.login_tk
-          }, login.sk_enc)
+        try {
+            if(login.flag){
+                response.flag     = true; 
+                response.loginTk  = login.login_tk;
+                response.token    = jwtHelper.sign({
+                  nickname : login.nickname,
+                  loginTk  : login.login_tk
+                }, login.sk_enc)
+                response.nickname = login.nickname;
+              }
+              res.status(200).send(response); 
+        } catch (error) {
+            console.log(error);
+            res.send(response);
         }
-        res.status(200).send(response); 
+        
       })
 }
 

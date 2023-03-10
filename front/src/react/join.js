@@ -60,7 +60,7 @@ export default function JoinService() {
         let joinQuery = {
             loginTk : mimc7.hash(_.get(key,'skOwn'), types.asciiToHex('login')),
             nickname: nickname,
-            skEnc   : _.get(key, 'skOwn'),
+            skEnc   : _.get(key, 'skEnc'),
             pkOwn   : _.get(key, 'pkOwn'),
             pkEnc   : _.get(key, 'pkEnc'),
             addr    : _.get(key, 'ena'),

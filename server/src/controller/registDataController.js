@@ -75,6 +75,7 @@ export const registDataController = async (req, res) => {
             'h_ct'  : snarkInput.gethCt(),
             'h_data'  : snarkInput.getIdData(),
             'data_path' : fileStorePath + snarkInput.gethCt() + '.json',
+            'h_k'   : snarkInput.gethK(),
         }, 
         usrInfo, req.body)
     

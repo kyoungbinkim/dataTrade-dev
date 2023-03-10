@@ -185,14 +185,15 @@ export async function registDataQuery(registDataJsonInput){
     const owner_nickname    = registDataJsonInput['nickname'];
     const title             = registDataJsonInput['title'];
     const descript          = registDataJsonInput['desc'];
+    const h_k               = registDataJsonInput['h_k'];
     const h_ct              = registDataJsonInput['h_ct'];
     const h_data            = registDataJsonInput['h_data'];
     const enc_key           = registDataJsonInput['enc_key'];
     const data_path         = registDataJsonInput['data_path'];
 
     const query = 
-    `INSERT INTO data (owner_nickname, title, descript, h_ct, h_data, enc_key, data_path)
-    VALUES('${owner_nickname}', '${title}', '${descript}', '${h_ct}', '${h_data}', '${enc_key}', '${data_path}')`
+    `INSERT INTO data (owner_nickname, title, descript, h_ct, h_data, enc_key, data_path, h_k)
+    VALUES('${owner_nickname}', '${title}', '${descript}', '${h_ct}', '${h_data}', '${enc_key}', '${data_path}', '${h_k}')`
 
     try {
         const [ret] = await promiseConnection.execute(query);
@@ -231,6 +232,17 @@ export async function getMyData(nickname){
     return rows
 }
 
+export async function getDataInfoFromHct(h_ct) {
+    const getDataInfoFromHctQuery = 
+    `SELECT * FROM data WHERE h_ct='${h_ct}';`
+
+    const [rows] = await promiseConnection.execute(
+        getDataInfoFromHctQuery
+    );
+    console.log(rows);
+    return rows
+}
+
 export async function getSkEncKey(lgTk) {
     try {
         const getSkQuery = `SELECT sk_enc FROM user where login_tk=?`
@@ -264,6 +276,7 @@ export async function getUserKeysFromNickname(nickname) {
         return undefined;
     }
 }
+
 
 
 const mySqlHandler = {

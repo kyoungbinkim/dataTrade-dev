@@ -29,6 +29,7 @@ CREATE TABLE data (
     owner_nickname varchar(32) NOT NULL,
     title varchar(30) NOT NULL,
     descript text(1000),
+    h_k varchar(64) NOT NULL,
     h_ct varchar(64) NOT NULL,
     h_data varchar(64) NOT NULL,
     enc_key varchar(64) NOT NULL,

@@ -3,6 +3,7 @@ import {
     getDataList,
     getUserInfo,
     getMyData,
+    getDataInfoFromHct
 } from "../core/data/db.mysql.js";
 
 import { getLoginTk } from "./registDataController.js";
@@ -32,4 +33,12 @@ export const getMyDataController = async (req, res) => {
     res.send({
         data:myData
     });
+}
+
+export const getInfoFromHct = async (req, res) => {
+    const h_ct = req.params.h_ct;
+    const info = await getDataInfoFromHct(h_ct);
+    res.send({
+        info : info
+    })
 }

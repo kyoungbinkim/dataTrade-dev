@@ -99,7 +99,7 @@ class RegistData {
     gethCt(){
         return this.#h_ct;
     }
-
+    
     getIdData(){
         return this.#id_data;
     }

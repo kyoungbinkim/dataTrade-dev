@@ -12,13 +12,14 @@ import '../test/WalletCard.css'
 const loadDataList = async () => {
     const ret = (await httpCli.get(`/data/page`)).data;
     const test = (await httpCli.get(`data/page/0`)).data;
+
     if(ret === 'err'){
 
         sessionStorage.clear();
         alert('다시 로그인하세요')
         return [];
     }
-    console.log(ret);
+    // console.log(ret);
     return ret.data;
     return JSON.stringify(ret);
 }

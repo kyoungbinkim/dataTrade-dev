@@ -3,6 +3,7 @@ import {
     getDataController, 
     getAlldataController,
     getMyDataController, 
+    getInfoFromHct
 } from '../../controller/dataController';
 import { registDataController } from '../../controller/registDataController';
 
@@ -16,5 +17,7 @@ dataRouter.get('/page/:ind', getDataController);
 dataRouter.get('/page', getAlldataController);
 
 dataRouter.get('/mydata', getMyDataController);
+
+dataRouter.get('info/:h_ct', getInfoFromHct);
 
 export default dataRouter;
