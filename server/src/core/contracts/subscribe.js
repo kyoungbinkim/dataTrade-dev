@@ -4,17 +4,18 @@ import Encryption from '../crypto/encryption';
 import {
     getTradeContract
 } from './index';
+import { getUserKeysFromAddr } from '../data/db.mysql';
 
 const pubEnc = new Encryption.publicKeyEncryption();
 
-const subscribeGenTrade = () => {
+const subscribeGenTrade =  () => {
     try {
         return getTradeContract().eth.subscribe(
             'logs', 
             {
                 address: _.get(Config, 'contractAddress')
             }, 
-            (err, log) => {
+            async (err, log) => {
                 if (err) {
                     console.log(err);
                     return;
@@ -29,8 +30,13 @@ const subscribeGenTrade = () => {
                     console.log(i, data.slice(i*64, (i+1)*64), data.slice(i*64, (i+1)*64).length)
                 }
                 
+                const peerKeys = await getUserKeysFromAddr(data.slice(0, 64))
+
                 const c0 = data.slice(64, 128)
                 const c1 = data.slice(128,192)
+
+
+
                 let c2 = [];
                 for (let i=5; i<11; i++){
                     c2.push(data.slice(i*64, (i+1)*64))
@@ -38,7 +44,7 @@ const subscribeGenTrade = () => {
                 // TODO :  Accept Trade
                 const dec = pubEnc.Dec(
                     new Encryption.pCT(c0, c1,c2),
-                    _.get(Config.keys, 'sk_enc')
+                    _.get(peerKeys, 'sk_enc')
                 )
                 console.log(dec);
 

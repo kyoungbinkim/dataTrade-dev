@@ -1,9 +1,11 @@
+import _ from 'lodash'
 import { 
     getAllDataList, 
     getDataList,
     getUserInfo,
     getMyData,
-    getDataInfoFromHct
+    getDataInfoFromHct,
+    getUserKeysFromNickname
 } from "../core/data/db.mysql.js";
 
 import { getLoginTk } from "./registDataController.js";
@@ -37,8 +39,11 @@ export const getMyDataController = async (req, res) => {
 
 export const getInfoFromHct = async (req, res) => {
     const h_ct = req.params.h_ct;
-    const info = await getDataInfoFromHct(h_ct);
-    res.send({
-        info : info
-    })
+    const dataInfo = (await getDataInfoFromHct(h_ct))[0];
+    const usrInfo = await getUserKeysFromNickname(_.get(dataInfo, 'owner_nickname'));
+    
+    // console.log('getInfoFromHct',dataInfo);
+    // console.log('user Info : ', usrInfo)
+    console.log(_.merge(dataInfo, usrInfo))
+    res.send(_.merge(dataInfo, usrInfo))
 }

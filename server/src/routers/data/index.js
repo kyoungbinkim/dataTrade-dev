@@ -18,6 +18,6 @@ dataRouter.get('/page', getAlldataController);
 
 dataRouter.get('/mydata', getMyDataController);
 
-dataRouter.get('info/:h_ct', getInfoFromHct);
+dataRouter.get('/info/:h_ct', getInfoFromHct);
 
 export default dataRouter;

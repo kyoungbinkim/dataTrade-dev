@@ -139,7 +139,7 @@ export function userLoginQuery(userInfoJsonInput, callback){
     const userInfoJson = _.isString(userInfoJsonInput)? JSON.parse(userInfoJsonInput) : userInfoJsonInput;
 
     const loginTk = userInfoJson['loginTk']
-    const loginQuery = `select login_tk, nickname, sk_enc from user where login_tk=?`
+    const loginQuery = `select login_tk, nickname, sk_enc, eoa_addr from user where login_tk=?`
 
     connection.query(loginQuery, [`${loginTk}`], (err, row) => {
         if(err) {console.log(err); callback(false); return;}
@@ -234,12 +234,12 @@ export async function getMyData(nickname){
 
 export async function getDataInfoFromHct(h_ct) {
     const getDataInfoFromHctQuery = 
-    `SELECT * FROM data WHERE h_ct='${h_ct}';`
+    `SELECT h_k, h_ct, h_data, owner_nickname FROM data WHERE h_ct='${h_ct}';`
 
     const [rows] = await promiseConnection.execute(
         getDataInfoFromHctQuery
     );
-    console.log(rows);
+    // console.log(rows);
     return rows
 }
 
@@ -277,6 +277,22 @@ export async function getUserKeysFromNickname(nickname) {
     }
 }
 
+export async function getUserKeysFromAddr(eoa_addr){
+    try {
+
+        let eoa = BigInt('0x' + eoa_addr).toString(16)
+        if (eoa.slice(2) !== '0x'){
+            eoa = '0x' + eoa
+        }
+        const getUserKeyQuery = `SELECT nickname, pk_enc, pk_own, sk_enc from user where eoa_addr=?`
+        const [rows] = await promiseConnection.execute(getUserKeyQuery, [`${eoa}`])
+        console.log('getUserKeysFromAddr : ', rows[0], eoa, eoa.slice(2))
+        return rows[0]
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+}
 
 
 const mySqlHandler = {
