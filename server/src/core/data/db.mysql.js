@@ -266,6 +266,17 @@ export async function getUserInfo(lgTk) {
     }
 }
 
+export async function getUserInfoFormNickname(nickname) {
+    try {
+        const getUserKeyQuery = `SELECT * from user where nickname=?`
+        const [rows] = await promiseConnection.execute(getUserKeyQuery, [`${nickname}`])
+        return rows[0]
+    } catch (error) {
+        console.log(error);
+        return undefined;
+    }
+}
+
 export async function getUserKeysFromNickname(nickname) {
     try {
         const getUserKeyQuery = `SELECT nickname, pk_enc, pk_own from user where nickname=?`

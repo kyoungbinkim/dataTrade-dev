@@ -37,6 +37,8 @@ export default function LoginService() {
             sessionStorage.setItem('loginTk', loginTk);
             sessionStorage.setItem('jwtToken', res.data.token);
 
+            console.log(res.data)
+
             httpCli.defaults.headers.common['access-token'] = JSON.stringify(res.data);
             navigate('/');
             return;

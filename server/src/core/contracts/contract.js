@@ -107,6 +107,16 @@ export default class contract extends Web3Interface {
     async getAllAddr() {
         return (await this.eth.getAccounts());
     }
+
+    async getTx(txHash) {
+        try {
+            const receipt = this.eth.getTransaction(txHash)
+        } catch (error) {
+            console.log(error)
+            return undefined;
+        }
+        
+    }
 }
 
 export function registDataInputJsonToContractFormat(inputJson) {

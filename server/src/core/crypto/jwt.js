@@ -44,6 +44,7 @@ export function verify(token, sk) {
 export const authMiddleWare = async (req, res, next) => {
 
     const jwtHeader = JSON.parse((req.headers['access-token'] || req.query.token) ?? '{}')
+    console.log(jwtHeader, req.headers);
     if(jwtHeader === {}){
         return res.send({
             msg : 'do not have token',
@@ -52,6 +53,7 @@ export const authMiddleWare = async (req, res, next) => {
     }
     console.log(jwtHeader, req.headers);
     try {
+        
         const sk = await getSkEncKey(jwtHeader.loginTk);
         const token = jwtHeader.token;
         if(!token){

@@ -62,7 +62,7 @@ export default class UserKey {
         const userPublicKey = {
             ena : null,
             pkOwn : pk_own,
-            pkEnc : Curve.basePointMul(types.hexToInt(sk_own)).toString(16)
+            pkEnc : Curve.basePointMul(types.hexToInt(sk_enc)).toString(16)
         };
         // azerothFront code userPublicKey.pkEnc.toString(16)
         userPublicKey.ena =  mimc7.hash(userPublicKey.pkOwn, userPublicKey.pkEnc);
@@ -84,8 +84,8 @@ export default class UserKey {
 
         const userPublicKey = {
             ena : null,
-            pkOwn : mimc7.hash(sk_own),
-            pkEnc : Curve.basePointMul(skBigInt).toString(16)
+            pkOwn : pk_own,
+            pkEnc : Curve.basePointMul(types.hexToInt(sk_enc)).toString(16)
         };
 
         // azerothFront code userPublicKey.pkEnc.toString(16)
