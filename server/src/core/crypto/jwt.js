@@ -42,7 +42,7 @@ export function verify(token, sk) {
 
 
 export const authMiddleWare = async (req, res, next) => {
-
+    // console.log('access-token', req.headers['access-token'], req.query.token)
     const jwtHeader = JSON.parse((req.headers['access-token'] || req.query.token) ?? '{}')
     console.log(jwtHeader, req.headers);
     if(jwtHeader === {}){

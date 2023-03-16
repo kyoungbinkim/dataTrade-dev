@@ -81,6 +81,10 @@ const RegisterDataComponent = () => {
         // console.log(reqBody)ㄴ
         httpCli.post('/data/register/', reqBody).then(
             async res => {
+                if(res.flag == false){
+                    alert('fail.')
+                    setLoading(false);
+                }
                 console.log(res)
                 alert('데이터 등록이 완료되었습니다.')
                 console.log(res.data);

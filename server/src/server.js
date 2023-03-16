@@ -63,17 +63,17 @@ export const initServerAccount = async (initDBflag=false) => {
     _.set(Config.keys, 'sk_own', serverKey.skOwn);
     _.set(Config.keys, 'addr', serverKey.pk.ena);
 
+    const receipt = await getTradeContract().registUser(
+        hexToDec(_.get(Config.keys, 'pk_own')),
+        hexToDec(_.get(Config.keys, 'pk_enc')),
+        (_.get(Config, 'ethAddr')),
+    )
+    console.log(receipt);
+
     if (initDBflag){
         try {
             
             await clearDB()
-
-            const receipt = await getTradeContract().registUser(
-                hexToDec(_.get(Config.keys, 'pk_own')),
-                hexToDec(_.get(Config.keys, 'pk_enc')),
-                (_.get(Config, 'ethAddr')),
-            )
-            console.log(receipt);
 
             userJoinQuery(
                 _.merge(Config.keys, 

@@ -234,13 +234,28 @@ export async function getMyData(nickname){
 
 export async function getDataInfoFromHct(h_ct) {
     const getDataInfoFromHctQuery = 
-    `SELECT h_k, h_ct, h_data, owner_nickname FROM data WHERE h_ct='${h_ct}';`
+    `SELECT h_k, h_ct, h_data, owner_nickname, title FROM data WHERE h_ct='${h_ct}';`
 
     const [rows] = await promiseConnection.execute(
         getDataInfoFromHctQuery
     );
     // console.log(rows);
     return rows
+}
+
+export async function getDataEncKeyFromHct(h_ct) {
+    try {
+        const getDataEncKeyFromHctQuery = 
+        `SELECT enc_key, data_path FROM data WHERE h_ct='${h_ct}';`
+
+        const [rows] = await promiseConnection.execute(
+            getDataEncKeyFromHctQuery
+        );
+        // console.log(rows);
+        return rows[0]
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export async function getSkEncKey(lgTk) {
