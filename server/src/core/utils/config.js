@@ -46,7 +46,8 @@ export let fileStorePath            = Config.homePath + `db/`;
 export let ganacheAccountKeyPath    = Config.homePath + `../tradeContract/keys.json`;
 export let contractsBuildPath       = Config.homePath + `../tradeContract/build/contracts/`
 export let proofStorePath           = ``
-export let snarkPath                = Config.homePath + 'src/core/libsnark/js-libsnark-opt/libsnark/'
+// export let snarkPath                = Config.homePath + 'src/core/libsnark/js-libsnark-opt/libsnark/'
+export let snarkPath                = fileStorePath
 export let crsPath                  = Config.homePath + '../crs/'
 
 export function initConfig(){

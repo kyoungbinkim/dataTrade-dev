@@ -104,6 +104,31 @@ export default class contract extends Web3Interface {
         )
     }
 
+    async acceptTrade(
+        proof,
+        inputs,
+        userEthAddress    = _.get(Config, 'ethAddr'),
+        userEthPrivateKey = _.get(Config, 'privKey'),
+    ) {
+        if (proof.length != 8) {
+            console.log('invalid proof length');
+            return false;
+        }
+        if (inputs.length != 6) {
+            console.log('invalid inputs length');
+            return false;
+        }
+
+        const gas = await this.contractMethod.acceptOrder(proof,inputs).estimateGas();
+
+        return this.sendContractCall(
+            this.contractMethod.acceptOrder(proof,inputs),
+            userEthAddress,
+            userEthPrivateKey,
+            gas
+        )
+    }
+
     async getAllAddr() {
         return (await this.eth.getAccounts());
     }

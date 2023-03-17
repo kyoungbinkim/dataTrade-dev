@@ -49,7 +49,11 @@ export async function deploy(
 
     const deployTx = ContractIns.deploy({
         data : ContractJson.bytecode,
-        arguments : [getContractFormatVk('RegistData'), getContractFormatVk('GenTrade')]
+        arguments : [
+            getContractFormatVk('RegistData'), 
+            getContractFormatVk('GenTrade'),
+            getContractFormatVk('AcceptTrade')
+        ]
     })
 
     const createTransaction = await web3Ins.eth.accounts.signTransaction({

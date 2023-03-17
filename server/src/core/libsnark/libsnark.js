@@ -8,12 +8,12 @@ export const CircuitType = ["RegistData", "GenTrade", "AcceptTrade"];
 export default class LibSnark {
     constructor(circuitType, verify=false){
         if(!circuitType in CircuitType){return undefined;}
-        this.type = verify ? "prover" : "verifier";
+        this.type = verify ?  "verifier" : "prover" ;
         this.CircuitType = circuitType;
 
         this.pk_file_path = Buffer.alloc(250); this.pk_file_path.write(crsPath+this.CircuitType+'_crs_pk.dat');
         if(verify){
-            this.vk_file_path = Buffer.alloc(250); vk_file_path.write(crsPath+this.CircuitType+'_crs_vk.dat');
+            this.vk_file_path = Buffer.alloc(250); this.vk_file_path.write(crsPath+this.CircuitType+'_crs_vk.dat');
         }
         const circuit_type_buf = Buffer.alloc(30); circuit_type_buf.write(this.CircuitType);
 
@@ -27,8 +27,9 @@ export default class LibSnark {
 
         SnarkLib.serializeFormat(this.contextId, Number(Config.serializeFormat));
         SnarkLib.buildCircuit(this.contextId); // 5초
-        SnarkLib.readPK(this.contextId, this.pk_file_path);
-        if(verify)SnarkLib.readVK(this.contextId, )
+        
+        if(verify) SnarkLib.readVK(this.contextId,this.vk_file_path)
+        else SnarkLib.readPK(this.contextId, this.pk_file_path);
         this.getLastFunctionMsg();
     }
 

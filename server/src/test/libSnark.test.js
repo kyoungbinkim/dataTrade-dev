@@ -1,39 +1,64 @@
+import fs from 'fs';
 import LibSnark from "../core/libsnark/libsnark.js";
 import SnarkInput from "../core/libsnark/struct/snarkInput.js";
 import FileSystem from '../core/utils/file.js'
+import { snarkPath } from '../core/utils/config.js';
 
 describe("libsnark ", () => {
-    let libsnark;
-    it("1" ,(done) => {
+    let libsnark = new LibSnark("AcceptTrade");
+    let libsnarkVerifier = new LibSnark("AcceptTrade", true);
 
-        libsnark = new LibSnark("RegistData");
-        console.log(libsnark.CircuitType);
-
-        let testData = FileSystem.readFileToBigIntString("../../package.json");
-        console.log(testData);
-        testData = FileSystem.hexStringToBigIntArr(testData);
-        console.log(testData, testData.length);
-        const snarkInput = new SnarkInput.RegistData();
-        snarkInput.uploadPkOwnFromPrivKey("1234");
-        snarkInput.uploadData(testData);
-        snarkInput.encryptData();
-        snarkInput.makeSnarkInput();
-
-        const snarkInputJsonStr = snarkInput.toSnarkInputFormat();
-        console.log(snarkInputJsonStr);
-
-        libsnark.uploadInputJsonStr(snarkInputJsonStr);
-        libsnark.getLastFunctionMsg();
-        libsnark.runProof("_1");
-
-        const snarkInput2 = new SnarkInput.RegistData();
-        snarkInput2.uploadPkOwnFromPrivKey("123457");
-        snarkInput2.uploadData(testData);
-        snarkInput2.encryptData();
-        snarkInput2.makeSnarkInput();
-        libsnark.uploadInputJsonStr(snarkInput2.toSnarkInputFormat());
-        libsnark.runProof("_2");
+    it('regist Data Test', async (done) => {
+        
+        const snarkInput = new SnarkInput.AcceptTrade(
+            '12345',
+            'ab123',
+            'fff12',
+            '123faf',
+            '998afd',
+            '123000',
+            '123000'
+        );
+        
+        console.log(
+            snarkInput.toSnarkInputFormat()
+        )
+        
+        libsnark.uploadInputAndRunProof(
+            snarkInput.toSnarkInputFormat(),
+            '_test'
+        )
+        
+        const proofJson = fs.readFileSync(snarkPath + 'AcceptTrade_test_proof.json', 'utf-8');
+        console.log("proofJson",proofJson)
+        libsnarkVerifier.verifyProof(
+            snarkInput.toSnarkVerifyFormat(),
+            '_test'
+        )
 
         done();
-    }).timeout(100000);
+    }).timeout(200000);
+
+    // it("1" ,(done) => {
+
+    //     let libsnark = new LibSnark("RegistData");
+    //     console.log(libsnark.CircuitType);
+
+    //     const snarkInput = new SnarkInput.RegistData();
+    //     let testData = fs.readFileSync("../../package.json", 'utf-8');
+    //     snarkInput.uploadDataFromStr(testData);
+    //     snarkInput.uploadPkOwn('123456789')
+    //     snarkInput.encryptData();
+    //     snarkInput.makeSnarkInput();
+
+    //     const snarkInputJsonStr = snarkInput.toSnarkInputFormat();
+    //     console.log(snarkInputJsonStr);
+
+    //     libsnark.uploadInputAndRunProof(snarkInputJsonStr, "_" + snarkInput.gethCt());
+    //     libsnark.getLastFunctionMsg();
+
+    //     libsnark.verifyProof()
+
+    //     done();
+    // }).timeout(100000);
 });

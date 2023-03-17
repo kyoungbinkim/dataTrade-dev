@@ -6,6 +6,7 @@ import math from '../../utils/math.js';
 import CurveParam from '../../crypto/curveParam.js';
 import FileSystem from '../../utils/file.js';
 import { rawFileToBigIntString } from '../../utils/file.js';
+import PublicKey from './pk.js';
 
 class RegistData {
     #data   = null;
@@ -174,8 +175,91 @@ class RegistData {
     }
 }
 
+
+/**
+ r_cm 
+ h_k 
+ fee_del 
+ fee_own 
+ dataEncKey 
+ pk_enc_cons 
+ pk_own_del 
+ pk_own_peer 
+ r_enc 
+ k_enc 
+ */
+
+ 
+class AcceptTrade{
+    /**
+     * 
+     * @param {PublicKey} PublicKey_peer 
+     * @param {PublicKey} PublicKey_del 
+     * @param {PublicKey} PublicKey_cons 
+     * @param {*} dataEncKey 
+     * @param {*} r_cm 
+     * @param {*} fee_own 
+     * @param {*} fee_del 
+     */
+    constructor(
+        pk_own_del,
+        pk_own_peer,
+        pk_enc_cons,
+        dataEncKey,
+        r_cm,
+        fee_own,
+        fee_del, 
+    ){  
+        const mimc7 = new mimc.MiMC7();
+        const pubEnc= new Encryption.publicKeyEncryption();
+
+        this.pk_enc_cons = pk_enc_cons
+        this.pk_own_peer = pk_own_peer
+        this.pk_own_del  = pk_own_del
+        this.dataEncKey  = dataEncKey
+        this.r_cm        = r_cm
+        this.fee_del     = fee_del
+        this.fee_own     = fee_own
+
+        this.h_k         = mimc7.hash(
+            this.pk_own_peer,
+            this.dataEncKey
+        )
+
+        this.cm_own = mimc7.hash(pk_own_peer, r_cm, fee_own, this.h_k, pk_enc_cons);
+        this.cm_del = mimc7.hash(pk_own_del, r_cm, fee_del, this.h_k, pk_enc_cons);
+
+        const[pct, r, k] = pubEnc.Enc(
+            {pkEnc : pk_enc_cons},
+            dataEncKey
+        )
+
+        this.ecryptedDataEncKey = pct.toList();
+        this.r_enc = r;
+        this.k_enc = k;
+    }
+
+    toJson(){
+        return JSON.stringify(this, null, 2)
+    }
+    
+    toSnarkInputFormat(){
+        return this.toJson();
+    }
+
+    toSnarkVerifyFormat() {
+        return JSON.stringify({
+            'cm_del' : this.cm_del,
+            'cm_own' : this.cm_own,
+            'ecryptedDataEncKey' : this.ecryptedDataEncKey
+        }, null, 2)
+    }
+    
+}
+
 const SnarkInput = {
     RegistData,
+    AcceptTrade
 }
 
 export default SnarkInput;

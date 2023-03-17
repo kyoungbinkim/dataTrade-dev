@@ -15,27 +15,30 @@ const crsPath= process.cwd()+'/../../crs/'
 
 const RegistDataVkJson = JSON.parse(fs.readFileSync(crsPath+'RegistData_crs_vk.json'));
 const GenTradeVkJson   = JSON.parse(fs.readFileSync(crsPath+'GenTrade_crs_vk.json'));
+const AcceptTradeVKJson= JSON.parse(fs.readFileSync(crsPath + 'AcceptTrade_crs_vk.json'));
 
-const vkJson = JSON.parse(fs.readFileSync(process.cwd()+'/../test/RegistData_crs_vk.json'));
 
 let vk_RegistData = [];
-let vk_GenTrade   = []
+let vk_GenTrade   = [];
+let vk_AcceptTrade= [];
 for (let i = 0; i < 2; i++) {
     vk_RegistData.push(hexToDex(RegistDataVkJson['alpha'][i]))
-    vk_GenTrade.push(hexToDex(GenTradeVkJson['alpha'][i]))    
+    vk_GenTrade.push(hexToDex(GenTradeVkJson['alpha'][i]))
+    vk_AcceptTrade.push(hexToDex(AcceptTradeVKJson['alpha'][i]))
 }
 
 // reversed
 for (let i = 0; i < 4; i++) {
     vk_RegistData.push(hexToDex(RegistDataVkJson['beta'][Number.parseInt(i / 2)][(i+1) % 2]))
     vk_GenTrade.push(hexToDex(GenTradeVkJson['beta'][Number.parseInt(i / 2)][(i+1) % 2]))
+    vk_AcceptTrade.push(hexToDex(AcceptTradeVKJson['beta'][Number.parseInt(i / 2)][(i+1) % 2]))
 }
 
 // reversed
 for (let i = 0; i < 4; i++) {
     vk_RegistData.push(hexToDex(RegistDataVkJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
     vk_GenTrade.push(hexToDex(GenTradeVkJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
-
+    vk_AcceptTrade.push(hexToDex(AcceptTradeVKJson['delta'][Number.parseInt(i / 2)][(i+1) % 2]))
 }
 
 // console.log("ABC len : ", vkJson['ABC'].length)
@@ -43,9 +46,12 @@ for (let i = 0; i < RegistDataVkJson['ABC'].length*2; i++) {
     vk_RegistData.push(hexToDex(RegistDataVkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
 }
 
-for (let i=0; i< GenTradeVkJson['ABC'].length*2; i++ ){
+for (let i=0; i < GenTradeVkJson['ABC'].length*2; i++){
     vk_GenTrade.push(hexToDex(GenTradeVkJson['ABC'][Number.parseInt(i / 2)][i % 2]))
+}
 
+for (let i=0; i < AcceptTradeVKJson['ABC'].length*2; i++){
+    vk_AcceptTrade.push(hexToDex(AcceptTradeVKJson['ABC'][Number.parseInt(i / 2)][i % 2]))
 }
 
 console.log('vk_GenTrade : ', vk_GenTrade)
@@ -60,7 +66,8 @@ module.exports = function (deployer) {
   deployer.deploy(
     DataTradeBase, 
     vk_RegistData,
-    vk_RegistData
+    vk_RegistData,
+    vk_AcceptTrade
   );
 };
 

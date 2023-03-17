@@ -56,12 +56,12 @@ contract DataTradeContract {
 
     constructor(
         uint256[] memory _registData_vk,
-        uint256[] memory _orderData_vk
-        // uint256[] memory _acceptOrder_vk
+        uint256[] memory _orderData_vk,
+        uint256[] memory _acceptOrder_vk
     ){
         registData_vk = _registData_vk;
         orderData_vk  = _orderData_vk;
-        // acceptOrder_vk = _acceptOrder_vk;
+        acceptOrder_vk = _acceptOrder_vk;
     }
 
     function registUserByDelegator(
@@ -201,23 +201,36 @@ contract DataTradeContract {
         return true;
     }
 
+    /**
+        1
+        cm_del  
+        cm_own 
+		encryptedDataEncKey size : 3 
+     */
+    function acceptOrder(
+        uint256[] memory proof,
+        uint256[ACCEPT_NUM_INPUTS] memory inputs
+    )
+        public
+        payable
+        returns(bool)
+    {
+        require(inputs.length == ACCEPT_NUM_INPUTS, "invalid Inputs length");
 
-    // function acceptOrderKey(
-    //     uint256[] memory proof,
-    //     uint256[ACCEPT_NUM_INPUTS] memory inputs
-    // )
-    //     public
-    //     payable
-    //     returns(bool)
-    // {
-    //     require(inputs.length == ACCEPT_NUM_INPUTS, "invalid Inputs length");
+        uint256[] memory input_values = new uint256[](ACCEPT_NUM_INPUTS);
+        for (uint256 i = 0 ; i < ACCEPT_NUM_INPUTS; i++) {
+            input_values[i] = inputs[i];
+        }
+        require( Groth16AltBN128._verify(acceptOrder_vk, proof, input_values), "invalid proof");
 
-    //     uint256[] memory input_values = new uint256[](ACCEPT_NUM_INPUTS);
-    //     for (uint256 i = 0 ; i < ACCEPT_NUM_INPUTS; i++) {
-    //         input_values[i] = inputs[i];
-    //     }
-    //     require( Groth16AltBN128._verify(acceptOrder_vk, proof, input_values), "invalid proof");
+        // check cm
+        require(waitTradeList[input_values[1]], "cm0 no exist");
+        require(waitTradeList[input_values[2]], "cm1 no exist");
 
-    //     return true;
-    // }
+        // 
+        waitTradeList[input_values[1]] = false;
+        waitTradeList[input_values[2]] = false;
+
+        return true;
+    }
 }
