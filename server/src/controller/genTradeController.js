@@ -9,10 +9,15 @@ import {
     getUserInfoFormNickname
 } from "../core/data/db.mysql";
 import { getTradeContract } from "../core/contracts";
+import SnarkInput from '../core/libsnark/struct/snarkInput';
+import LibSnark from '../core/libsnark/libsnark';
+import { getContractProof } from '../core/contracts/utils';
+import { acceptTradeInputJsonToContractFormat } from '../core/contracts/contract';
 
 
 const pubEnc = new Encryption.publicKeyEncryption(); 
 
+const libsnarkProver = new LibSnark("AcceptTrade");
 
 export const genTradeController = async (req, res) => {
     try {
@@ -26,12 +31,12 @@ export const genTradeController = async (req, res) => {
         console.log('dataInfo : ', JSON.stringify(dataInfo, null, 2));
 
         const receipt = await getTradeContract().eth.getTransaction(tx_hash)
-        // console.log(receipt);
+        console.log(receipt);
 
         const data = _.get(receipt, 'input').slice(10)
-        // for(let i=0; i<27; i++ ){
-        //     console.log(i, data.slice(i*64, (i+1)*64),)
-        // }
+        for(let i=0; i<27; i++ ){
+            console.log(i, data.slice(i*64, (i+1)*64),)
+        }
 
         /*
         pk_enc_cons,
@@ -70,6 +75,17 @@ export const genTradeController = async (req, res) => {
 
         // console.log(dec)
         const dataString = hexStrToString(dec)
+
+        acceptTrade(
+            _.get(Config.keys, 'pk_own'),
+            _.get(usrInfo, 'pk_own'),
+            dec_ct[0],
+            enc_key,
+            dec_ct[2],
+            dec_ct[3],
+            dec_ct[4]
+        )
+
         res.send({
             flag    : true,
             owner   : _.get(usrInfo, 'nickname'),
@@ -170,4 +186,49 @@ const hexStrToString = (strArr) => {
 
     console.log(ret, typeof ret)
     return ret
+}
+
+const acceptTrade = async (
+    pk_own_del,
+    pk_own_peer,
+    pk_enc_cons,
+    dataEncKey,
+    r_cm,
+    fee_own,
+    fee_del,
+) => {
+    try {
+        const snarkInput = new SnarkInput.AcceptTrade(
+            pk_own_del,
+            pk_own_peer,
+            pk_enc_cons,
+            dataEncKey,
+            r_cm,
+            fee_own,
+            fee_del
+        )
+    
+        libsnarkProver.uploadInputAndRunProof(
+            snarkInput.toSnarkInputFormat(),
+            '_' + r_cm
+        )
+    
+        const contractInput = acceptTradeInputJsonToContractFormat(
+            JSON.parse(snarkInput.toSnarkVerifyFormat())
+        )
+        const contractProof = getContractProof(r_cm, `AcceptTrade`)
+        
+        // console.log('\n Accept Trade : \n', contractInput, '\n', contractProof )
+
+
+        const receipt = await getTradeContract().acceptTrade(
+            contractProof,
+            contractInput,
+        )
+        console.log(receipt)
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+    
 }

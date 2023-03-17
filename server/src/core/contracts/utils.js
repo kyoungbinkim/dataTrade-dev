@@ -69,9 +69,9 @@ export function getProof(hCt, circuitType){
     return proofFlat(proofJson);
 }
 
-export function getContractProof(hCt, circuitType){
+export function getContractProof(proofId, circuitType){
     const proofJson = JSON.parse(
-        fs.readFileSync(fileStorePath+circuitType+'_' + hCt + '_proof.json', 'utf-8')
+        fs.readFileSync(fileStorePath+circuitType+'_' + proofId + '_proof.json', 'utf-8')
     )
     return proofFlat(proofJson);
 }

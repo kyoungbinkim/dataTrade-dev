@@ -193,13 +193,13 @@ class RegistData {
 class AcceptTrade{
     /**
      * 
-     * @param {PublicKey} PublicKey_peer 
-     * @param {PublicKey} PublicKey_del 
-     * @param {PublicKey} PublicKey_cons 
-     * @param {*} dataEncKey 
-     * @param {*} r_cm 
-     * @param {*} fee_own 
-     * @param {*} fee_del 
+     * @param {string} pk_own_del 
+     * @param {string} pk_own_peer 
+     * @param {string} pk_enc_cons 
+     * @param {string} dataEncKey 
+     * @param {string} r_cm 
+     * @param {string} fee_own 
+     * @param {string} fee_del 
      */
     constructor(
         pk_own_del,
@@ -208,7 +208,7 @@ class AcceptTrade{
         dataEncKey,
         r_cm,
         fee_own,
-        fee_del, 
+        fee_del
     ){  
         const mimc7 = new mimc.MiMC7();
         const pubEnc= new Encryption.publicKeyEncryption();

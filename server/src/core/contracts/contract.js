@@ -155,6 +155,18 @@ export function registDataInputJsonToContractFormat(inputJson) {
     return contractInput
 }
 
+export function acceptTradeInputJsonToContractFormat(inputJson) {
+    let tmp = ['1']
+    tmp.push(hexToDec(_.get(inputJson, 'cm_del')))
+    tmp.push(hexToDec(_.get(inputJson, 'cm_own')))
+
+    const ecryptedDataEncKey = _.get(inputJson, 'ecryptedDataEncKey')
+    for(let i=0; i<3; i++)
+        tmp.push(hexToDec(ecryptedDataEncKey[i]))
+    
+    return tmp
+}
+
 function hexToDec(hexStr){
     if(hexStr.slice(0,2) !== '0x'){
         return BigInt('0x' + hexStr).toString();
