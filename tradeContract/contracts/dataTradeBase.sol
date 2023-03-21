@@ -17,14 +17,23 @@ contract DataTradeContract {
         uint256 pk_own;
     }
 
+    struct Order {
+        address orderer;
+        uint256 cm_pear;
+        uint256 cm_del;
+    }
+
     // h_ct list
     mapping(uint256 => bool) internal _hCT_list;
 
-    //addr 
+    //addr
     mapping(uint256 => bool) internal _addr_list;
 
     // EOA -> user keys
     mapping(address => userInfo) _userInfoMap;
+
+    // order number -> order
+    mapping(bytes32 => Order) _order;
 
     // to check trade
     mapping(uint256 => bool) waitTradeList;
@@ -182,10 +191,16 @@ contract DataTradeContract {
         }
         require( Groth16AltBN128._verify(orderData_vk, proof, input_values), "invalid proof");
         
+        // order number
+        bytes32 orderNumber = MiMC7._hash(bytes32(inputs[3]), bytes32(inputs[4]));
+        _order[orderNumber].orderer = msg.sender;
+
         // insert cm to waitTradeList
         waitTradeList[inputs[3]] = true;
         waitTradeList[inputs[4]] = true;
-
+        _order[orderNumber].cm_pear = inputs[3];
+        _order[orderNumber].cm_del = inputs[4];
+        
         // emit log
         uint256[] memory c2 = new uint256[](6);
         for (uint256 i=0; i<6; i++){
@@ -197,6 +212,22 @@ contract DataTradeContract {
             input_values[2],
             c2
         );
+
+        return true;
+    }
+
+    function cancelOrder(
+        bytes32 orderNumber
+    )
+        public
+        returns (bool)
+    {
+        require(_order[orderNumber].orderer == msg.sender,"Not match the orderer");
+        require(waitTradeList[_order[orderNumber].cm_pear] == true, "cm pear no exit");
+        require(waitTradeList[_order[orderNumber].cm_del] == true, "cm del no exit");
+
+        waitTradeList[_order[orderNumber].cm_pear] = false;
+        waitTradeList[_order[orderNumber].cm_del] = false;
 
         return true;
     }
@@ -232,5 +263,15 @@ contract DataTradeContract {
         waitTradeList[input_values[2]] = false;
 
         return true;
+    }
+
+    function checkCmValidation(
+        bytes32 orderNumber
+    )
+        public
+        view
+        returns (bool,bool)
+    {
+        return (waitTradeList[_order[orderNumber].cm_pear], waitTradeList[_order[orderNumber].cm_del]);
     }
 }
