@@ -2,6 +2,9 @@
 
 import bluebird from 'bluebird';
 
+const GANACHE = 0
+const SEPOLIA = 1
+
 var Config = {
     homePath        : '/Users/kim/dataTrade-dev-backup/server/',
     
@@ -19,8 +22,15 @@ var Config = {
 
     networkId       : '1234',
 
+    networkSelector : 0,
+
     testProvider    : 'http://127.0.0.1:7545', // ganache link
-    testwsProvider  : 'http://127.0.0.1:7545',
+
+    sepoliaRPC      : 'https://rpc.sepolia.org/', // sepolia eth testnet RPC
+    sepoliaAccount  : {
+        address   : "0xa59c5a004f397ecf24FaA8105C523f0484Df514f",
+        privateKey: "0x59ad5215ff2aaf389eee6bed469924b324b04280e6473de4eb66ae379c0520d0"
+    },
 
     keys            : {
         sk_enc          : undefined,

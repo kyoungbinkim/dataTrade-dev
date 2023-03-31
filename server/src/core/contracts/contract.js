@@ -1,11 +1,10 @@
 import Web3Interface from "./web3.interface";
-import Web3 from "web3";
 import Config, { contractsBuildPath, fileStorePath } from "../utils/config";
 import _ from 'lodash'
 import fs from 'fs'
 
 
-export const ContractJson    = JSON.parse(fs.readFileSync(contractsBuildPath+'dataTradeContract.json', 'utf-8'))
+export const ContractJson = JSON.parse(fs.readFileSync(contractsBuildPath+'dataTradeContract.json', 'utf-8'))
 
 export default class contract extends Web3Interface {
 
@@ -16,7 +15,6 @@ export default class contract extends Web3Interface {
         this.contractAddress = contractAddr;
         this.contractAbi     = ContractJson.abi;
     }
-
 
     async registUser( 
         pk_own, 
@@ -140,7 +138,6 @@ export default class contract extends Web3Interface {
             console.log(error)
             return undefined;
         }
-        
     }
 }
 

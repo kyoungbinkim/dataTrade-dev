@@ -7,10 +7,9 @@ let tradeContract = undefined
 
 export const initTradeContract = () => {
     const contractAddr      = _.get(Config, 'contractAddress')
-    const testWsProvider    = _.get(Config, 'testwsProvider')
+    const testProvider    = _.get(Config, 'testProvider')
 
-    // console.log(contractAddr, testWsProvider)
-    tradeContract = new contract(testWsProvider, contractAddr)
+    tradeContract = new contract(testProvider, contractAddr)
 }
 
 export const getTradeContract = () => {

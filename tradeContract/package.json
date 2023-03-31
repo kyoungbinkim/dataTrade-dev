@@ -9,10 +9,11 @@
     "compile": "truffle compile",
     "deploy": "truffle deploy",
     "test": "truffle test",
-    "copy" : "node ./src/utils/utils.js 0",
+    "copy": "node ./src/utils/utils.js 0",
     "copyAbi": "node ./src/utils/utils.js 1",
     "copyKey": "node ./src/utils/utils.js 2",
-    "start" : "truffle compile && npm run copy && npm run testrpc "
+    "start": "truffle compile && npm run copy && npm run testrpc",
+    "sepolia": "node ./src/deploy.sepolia.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
   "dependencies": {
     "add": "^2.0.6",
     "ethereumjs-abi": "^0.6.8",
+    "fs": "^0.0.1-security",
     "ganache-cli": "^6.12.2",
     "lodash": "^4.17.21",
     "openzeppelin-solidity": "^4.0.0",
