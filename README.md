@@ -42,3 +42,5 @@ compile from libsnark-optimization and copy lib file to ```server/src/core/libsn
 
 ## Contract 
 tradeContract 디렉토리로가서 확인하세요 ~
+
+<img alt="demo" src="dataTradeWeb_demo.gif" >
