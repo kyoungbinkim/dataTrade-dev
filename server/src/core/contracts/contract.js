@@ -16,6 +16,10 @@ export default class contract extends Web3Interface {
         this.contractAbi     = ContractJson.abi;
     }
 
+    static deployGanache(endPoint=Config.testProvider) {
+        
+    }
+
     async registUser( 
         pk_own, 
         pk_enc,

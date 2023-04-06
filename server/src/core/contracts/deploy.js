@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import Web3 from 'web3';
 import fs from 'fs';
 import Config, {
     contractsBuildPath,
@@ -13,23 +12,22 @@ import {
     setContractAddr
 } from './utils.js'
 import { initTradeContract } from './index.js';
-
+import Ganache from '../utils/ganache.js';
 
 export const ganacheKeys = JSON.parse(fs.readFileSync(ganacheAccountKeyPath, 'utf-8'));
 
 export async function ganacheDeploy() {
-    const addr = (await web3Ins.eth.getAccounts())[0];
-    const privKey = new Buffer.from(
-        ganacheKeys.addresses[addr.toLocaleLowerCase()].secretKey.data, 'utf-8'
-    ).toString('Hex')
-
-    const receipt = await deploy(addr, privKey);
+    
+    const receipt = await deploy(
+        Ganache.getAddress(0), 
+        Ganache.getPrivateKey(0)
+    );
 
     setContractAddr(receipt.contractAddress);
     
     _.set(Config, 'contractAddress', receipt.contractAddress);
-    _.set(Config, 'ethAddr' , addr);
-    _.set(Config, 'privKey' , '0x'+privKey);
+    _.set(Config, 'ethAddr' , Ganache.getAddress(0));
+    _.set(Config, 'privKey' , '0x' + Ganache.getPrivateKey(0));
 
     initTradeContract();
 

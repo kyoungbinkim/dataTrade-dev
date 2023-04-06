@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS data;
 CREATE TABLE data (
     data_idx int(11) unsigned NOT NULL AUTO_INCREMENT,
     owner_nickname varchar(32) NOT NULL,
-    title varchar(30) NOT NULL,
+    title varchar(64) NOT NULL,
     descript text(1000),
     h_k varchar(64) NOT NULL,
     h_ct varchar(64) NOT NULL,
